@@ -26,7 +26,11 @@ package p_virus is
 	type T_Direction is (bg, hg, bd, hd);
 	package p_Direction_IO is new p_enum(T_Direction);
 
+
 --------------- Creation et Affichage de la grille
+
+procedure InitVect(v: out tv_virus);
+--{} => {v is initilised by vide piece}
 
 procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus);
 -- {f (ouvert) contient des configurations initiales,
