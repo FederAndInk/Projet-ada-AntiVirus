@@ -1,15 +1,22 @@
 package body p_virus is
 
+procedure InitVect is
+--{} => {v is initilised by vide piece}
+
+begin --InitVect
+
+end InitVect;
+
 procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus) is
 -- {f (ouvert) contient des configurations initiales,
 -- toutes les configurations se terminent par la position du virus rouge}
 -- => {V a ete initialise par lecture dans f de la partie de numero nb}
 piece:TR_Piece;
 nbrouge:integer:=0;
-nbconfig:integer:=0;
+nbconfig:integer:=1;
 begin
   reset(f, in_file);
-  while not end_of_file(f) and nbconfig/=nb loop
+  while not end_of_file(f) and nbconfig/=nb loop --move till the good config
     read(f, piece);
     if piece.couleur=rouge then
       nbrouge:=nbrouge+1;
@@ -19,7 +26,7 @@ begin
       end if;
     end if;
   end loop;
-  while not end_of_file(f) and nbrouge/=2 loop
+  while not end_of_file(f) and nbrouge/=2 loop --fill the vector with the config till finding the last red piece
     read(f, piece);
     v(piece.ligne,piece.colonne):=Piece.couleur;
     if piece.couleur=rouge then
@@ -35,10 +42,11 @@ begin
       for j in v'range(2) loop
         ecrire(T_Piece'image(v(i,j)));
         ecrire(" ");
+        text_io.skip_line;
       end loop;
     end loop;
   end AfficheVectVirus;
-  
+
   procedure AfficheGrille (V : in TV_Virus) is
   -- {} => {Le contenu du vecteur V est affiche dans une grille symbolisee
   -- Les colonnes sont numerotees de A a G et les lignes sont numerotees de 1 a 7.
