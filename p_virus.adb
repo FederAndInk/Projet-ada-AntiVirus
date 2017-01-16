@@ -5,11 +5,26 @@ procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus)
 -- toutes les configurations se terminent par la position du virus rouge}
 -- => {V a ete initialise par lecture dans f de la partie de numero nb}
 piece:TR_Piece;
+nbrouge:integer:=0;
+nbconfig:integer:=0;
 begin
   reset(f, in_file);
-  while not end_of_file(f) loop
+  while not end_of_file(f) and nbconfig/=nb loop
+    read(f, piece);
+    if piece.couleur=rouge then
+      nbrouge:=nbrouge+1;
+      if nbrouge=2 then
+        nbrouge:=0;
+        nbconfig:=nbconfig+1;
+      end if;
+    end if;
+  end loop;
+  while not end_of_file(f) and nbrouge/=2 loop
     read(f, piece);
     v(piece.ligne,piece.colonne):=Piece.couleur;
+    if piece.couleur=rouge then
+      nbrouge:=nbrouge+1;
+    end if;
   end loop;
 end CreeVectVirus;
 
@@ -19,19 +34,11 @@ end CreeVectVirus;
 begin
     for i in v'range(1) loop
       for j in v'range(2) loop
-        ecrire(v(i,j));
+        ecrire(T_Piece'image(v(i,j)));
         ecrire(" ");
       end loop;
     end loop;
   end AfficheVectVirus;
-
-procedure AfficheGrille (V : in TV_Virus) is
--- {} => {Les valeurs du vecteur V sont affichees sur une ligne}
-
-begin --AfficheGrille
-  ecrire("");
-end AfficheGrille;
-
 
 
 end p_virus;
