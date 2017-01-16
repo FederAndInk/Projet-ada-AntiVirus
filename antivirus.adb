@@ -7,5 +7,6 @@ begin --antivirus
   InitVect(v_grille);
   open(fconfinit , in_file, "Parties");
   CreeVectVirus(fConfInit, 1, v_grille);
-  AfficheVectVirus(v_grille);
+  --AfficheVectVirus(v_grille);
+  AfficheGrille(v_grille);
 end antivirus;

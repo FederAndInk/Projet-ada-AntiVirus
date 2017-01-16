@@ -32,6 +32,11 @@ package p_virus is
 procedure InitVect(v: out tv_virus);
 --{} => {v is initilised by vide piece}
 
+function ReplaceCoul(coul : in T_Piece) return character;
+--{} => {chaque valeur de v est remplacer par un "."
+--ou un chiffre correspondant}
+
+
 procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus);
 -- {f (ouvert) contient des configurations initiales,
 -- toutes les configurations se terminent par la position du virus rouge}
