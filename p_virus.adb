@@ -9,9 +9,6 @@ package p_virus is
       ecrire(v(i));
       ecrire(" ");
     end loop;
-
   end AfficheVectVirus;
-
-
 
 end p_virus;
