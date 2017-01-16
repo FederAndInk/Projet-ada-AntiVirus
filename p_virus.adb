@@ -16,4 +16,13 @@ procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus)
     end loop;
   end AfficheVectVirus;
 
+procedure AfficheGrille (V : in TV_Virus) is
+-- {} => {Les valeurs du vecteur V sont affichees sur une ligne}
+
+begin --AfficheGrille
+  ecrire("");
+end AfficheGrille;
+
+
+
 end p_virus;
