@@ -35,7 +35,7 @@ procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus)
 procedure AfficheVectVirus (V : in TV_Virus);
 -- {} => {Les valeurs du vecteur V sont affichees sur une ligne}
 
---procedure AfficheGrille (V : in TV_Virus);
+procedure AfficheGrille (V : in TV_Virus);
 -- {} => {Le contenu du vecteur V est affiche dans une grille symbolisee
 -- Les colonnes sont numerotees de A a G et les lignes sont numerotees de 1 a 7.
 -- Dans chaque case : 	. = case vide
