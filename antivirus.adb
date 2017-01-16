@@ -1,6 +1,9 @@
-procedure antivirus is
---{} => {}
+with P_ESiut, p_virus; use P_ESiut, p_virus;
 
-begin --antivirus
-  
+  procedure antivirus is
+  a,b : integer;
+  begin --antivirus
+  a :=5;
+  b :=5;
+  a := a+b;
 end antivirus;
