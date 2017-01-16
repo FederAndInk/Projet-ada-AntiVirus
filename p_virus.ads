@@ -1,4 +1,4 @@
-with sequential_IO; 
+with sequential_IO;
 with p_esiut; use p_esiut;
 
 package p_virus is
@@ -23,7 +23,7 @@ package p_virus is
 
 	---- type pour la direction des deplacements des pieces
 	type T_Direction is (bg, hg, bd, hd);
-	package p_Direction_IO is new p_enum(T_Direction); 
+	package p_Direction_IO is new p_enum(T_Direction);
 
 --------------- Creation et Affichage de la grille
 
@@ -52,12 +52,11 @@ function Presente (V : in TV_Virus; Coul : in T_Piece) return Boolean;
 -- {} => {resultat =  la piece de couleur Coul appartient a V}
 
 function Possible (V : in TV_Virus; Coul : in T_Piece; Dir : in T_Direction) return Boolean;
--- {P appartient a la grille V} => {resultat = vrai si la piece de couleur Coul peut etre 
+-- {P appartient a la grille V} => {resultat = vrai si la piece de couleur Coul peut etre
 --                                             deplacee dans la direction Dir}
 
 procedure Deplacement(V : in out TV_Virus; Coul : in T_Piece; Dir :in T_Direction);
--- {la piece de couleur Coul peut etre deplacee dans la direction Dir} 
+-- {la piece de couleur Coul peut etre deplacee dans la direction Dir}
 --                                        => {V a ete mis a jour suite au deplacement}
 
 end p_virus;
-
