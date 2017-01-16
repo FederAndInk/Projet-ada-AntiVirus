@@ -1,10 +1,13 @@
 package body p_virus is
 
-procedure InitVect is
+procedure InitVect(v: out tv_virus) is
 --{} => {v is initilised by vide piece}
-
 begin --InitVect
-
+  for i in v'range(1) loop
+    for j in v'range(2) loop
+      v(i,j) := vide ;
+    end loop;
+  end loop;
 end InitVect;
 
 procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus) is
@@ -42,7 +45,6 @@ begin
       for j in v'range(2) loop
         ecrire(T_Piece'image(v(i,j)));
         ecrire(" ");
-        text_io.skip_line;
       end loop;
     end loop;
   end AfficheVectVirus;
@@ -54,14 +56,20 @@ begin
   --			un chiffre = numero de la couleur de la piece presente dans la case
   --			le caractere 'B' = piece blanche fixe
   -- 			rien = pas une case}
-
+    nb : integer;
   begin
-      ecrire("\  A  B  C  D  E  F  G");
-      ecrire(" \ ===================");
-      for i in v'range(1) loop
-        ecrire(i); ecrire("|  ");
-        AfficheVectVirus(v);
-      end loop;
+    nb := 0;
+    ecrire("\  A  B  C  D  E  F  G");
+    ecrire(" \ ===================");
+    for i in v'range(1) loop
+      nb := nb+1;
+      ecrire(i); ecrire("|  ");
+      AfficheVectVirus(v);
+      if nb = 7 then
+        nb:= 0;
+        a_la_ligne;
+      end if;
+    end loop;
   end AfficheGrille;
 
 end p_virus;
