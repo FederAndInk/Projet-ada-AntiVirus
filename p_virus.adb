@@ -125,4 +125,12 @@ begin
     return v(i,j)=Coul;
   end presente;
 
+  function Possible (V : in TV_Virus; Coul : in T_Piece; Dir : in T_Direction) return Boolean;
+  -- {P appartient a la grille V} => {resultat = vrai si la piece de couleur Coul peut etre
+  --                                             deplacee dans la direction Dir}
+  begin
+
+  end Possible;
+
+
 end p_virus;
