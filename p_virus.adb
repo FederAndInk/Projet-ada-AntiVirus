@@ -1,6 +1,6 @@
-package p_virus is
+package body p_virus is
 
-procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus);
+procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus) is
 -- {f (ouvert) contient des configurations initiales,
 -- toutes les configurations se terminent par la position du virus rouge}
 -- => {V a ete initialise par lecture dans f de la partie de numero nb}
@@ -9,14 +9,14 @@ begin
   reset(f, in_file);
   while not end_of_file(f) loop
     read(f, piece);
-    v(piece.T_Lig,piece.T_Col):=T_Piece;
+    v(piece.ligne,piece.colonne):=Piece.couleur;
   end loop;
 end CreeVectVirus;
 
   procedure AfficheVectVirus (V : in TV_Virus) is
   -- {} => {Les valeurs du vecteur V sont affichees sur une ligne}
 
-begin
+  begin
     for i in v'range loop
       for j in v'range loop
         ecrire(v(j,i));
