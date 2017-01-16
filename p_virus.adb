@@ -72,4 +72,29 @@ begin
     end loop;
   end AfficheGrille;
 
+
+  function Gueri (V : in TV_Virus) return Boolean is
+  -- {} => {resultat = la piece rouge est prete a sortir (coin haut gauche)}
+  begin
+    return v(v'first(1),v'first(2))=rouge;
+  end Gueri;
+
+  function Presente (V : in TV_Virus; Coul : in T_Piece) return Boolean is
+  -- {} => {resultat =  la piece de couleur Coul appartient a V}
+  i:integer:=v'first(1);
+  j:character:=v'first(2);
+  begin
+    while i<v'last(1) and then v(i,j)/=Coul loop
+      while j<v'last(2) and then v(i,j)/=Coul loop
+        j:=T_col'succ(j);
+        ecrire_ligne(T_Piece'image(v(i,j)));
+      end loop;
+      if not (v(i,j)=Coul) then
+        j:=v'first(2);
+        i:=i+1;
+      end if;
+    end loop;
+    return v(i,j)=Coul;
+  end presente;
+
 end p_virus;

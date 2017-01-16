@@ -8,4 +8,5 @@ begin --antivirus
   open(fconfinit , in_file, "Parties");
   CreeVectVirus(fConfInit, 1, v_grille);
   AfficheVectVirus(v_grille);
+  ecrire(Presente(v_grille, violet));
 end antivirus;

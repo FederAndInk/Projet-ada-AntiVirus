@@ -50,10 +50,10 @@ procedure AfficheGrille (V : in TV_Virus);
 
 --------------- Fonctions et procedures pour le jeu
 
---function Gueri (V : in TV_Virus) return Boolean;
+function Gueri (V : in TV_Virus) return Boolean;
 -- {} => {resultat = la piece rouge est prete a sortir (coin haut gauche)}
 
---function Presente (V : in TV_Virus; Coul : in T_Piece) return Boolean;
+function Presente (V : in TV_Virus; Coul : in T_Piece) return Boolean;
 -- {} => {resultat =  la piece de couleur Coul appartient a V}
 
 --function Possible (V : in TV_Virus; Coul : in T_Piece; Dir : in T_Direction) return Boolean;
