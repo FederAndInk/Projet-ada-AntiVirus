@@ -9,7 +9,7 @@ begin
   reset(f, in_file);
   while not end_of_file(f) loop
     read(f, piece);
-    v(piece.T_Lig,piece.T_Col):=T_Piece;
+    v(piece.ligne,piece.colonne):=Piece.couleur;
   end loop;
 end CreeVectVirus;
 
