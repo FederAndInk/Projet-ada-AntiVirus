@@ -16,10 +16,12 @@ end CreeVectVirus;
   procedure AfficheVectVirus (V : in TV_Virus) is
   -- {} => {Les valeurs du vecteur V sont affichees sur une ligne}
 
-  begin
+begin
     for i in v'range loop
-      ecrire(v(i));
-      ecrire(" ");
+      for j in v'range loop
+        ecrire(v(j,i));
+        ecrire(" ");
+      end loop;
     end loop;
   end AfficheVectVirus;
 
