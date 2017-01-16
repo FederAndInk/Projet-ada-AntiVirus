@@ -1,5 +1,6 @@
 with sequential_IO;
 with p_esiut; use p_esiut;
+with text_io;
 
 package p_virus is
 
