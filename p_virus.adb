@@ -49,6 +49,35 @@ begin
     end loop;
   end AfficheVectVirus;
 
+  function ReplaceCoul(coul : in T_Piece) return character is -- à ne ps confondre avec charcater
+  --{} => {associe pour chaque valeur de Coul un "."
+  --ou un chiffre correspondant}
+  begin
+    if coul = rouge then
+      return '0';
+    elsif coul = turquoise then
+      return '1';
+    elsif coul = orange then
+      return '2';
+    elsif coul = rose then
+      return '3';
+    elsif coul = marron then
+      return '4';
+    elsif coul = bleu then
+      return '5';
+    elsif coul = violet then
+      return '6';
+    elsif coul = vert then
+      return '7';
+    elsif coul = Jaune then
+      return '8';
+    elsif coul = blanc then
+      return '9';
+    else
+      return '.';
+    end if;
+  end ReplaceCoul;
+
   procedure AfficheGrille (V : in TV_Virus) is
   -- {} => {Le contenu du vecteur V est affiche dans une grille symbolisee
   -- Les colonnes sont numerotees de A a G et les lignes sont numerotees de 1 a 7.
@@ -59,16 +88,15 @@ begin
     nb : integer;
   begin
     nb := 0;
-    ecrire("\  A  B  C  D  E  F  G");
-    ecrire(" \ ===================");
+    ecrire_ligne("\  A  B  C  D  E  F  G");
+    ecrire_ligne(" \ ===================");
     for i in v'range(1) loop
-      nb := nb+1;
-      ecrire(i); ecrire("|  ");
-      AfficheVectVirus(v);
-      if nb = 7 then
-        nb:= 0;
-        a_la_ligne;
-      end if;
+    a_la_ligne;  ecrire(i); ecrire("|  ");
+      for j in v'range(2) loop
+        nb := nb+1;
+        ecrire(ReplaceCoul(v(i,j)));
+        ecrire(" ");
+      end loop;
     end loop;
   end AfficheGrille;
 
