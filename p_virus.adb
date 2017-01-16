@@ -28,9 +28,8 @@ begin
   end loop;
 end CreeVectVirus;
 
-  procedure AfficheVectVirus (V : in TV_Virus) is
-  -- {} => {Les valeurs du vecteur V sont affichees sur une ligne}
-
+procedure AfficheVectVirus (V : in TV_Virus) is
+-- {} => {Les valeurs du vecteur V sont affichees sur une ligne}
 begin
     for i in v'range(1) loop
       for j in v'range(2) loop
@@ -39,6 +38,22 @@ begin
       end loop;
     end loop;
   end AfficheVectVirus;
+  
+  procedure AfficheGrille (V : in TV_Virus) is
+  -- {} => {Le contenu du vecteur V est affiche dans une grille symbolisee
+  -- Les colonnes sont numerotees de A a G et les lignes sont numerotees de 1 a 7.
+  -- Dans chaque case : 	. = case vide
+  --			un chiffre = numero de la couleur de la piece presente dans la case
+  --			le caractere 'B' = piece blanche fixe
+  -- 			rien = pas une case}
 
+  begin
+      ecrire("\  A  B  C  D  E  F  G");
+      ecrire(" \ ===================");
+      for i in v'range(1) loop
+        ecrire(i); ecrire("|  ");
+        AfficheVectVirus(v);
+      end loop;
+  end AfficheGrille;
 
 end p_virus;
