@@ -65,7 +65,7 @@ function Possible (V : in TV_Virus; Coul : in T_Piece; Dir : in T_Direction) ret
 -- {P appartient a la grille V} => {resultat = vrai si la piece de couleur Coul peut etre
 --                                             deplacee dans la direction Dir}
 
---procedure Deplacement(V : in out TV_Virus; Coul : in T_Piece; Dir :in T_Direction);
+procedure Deplacement(V : in out TV_Virus; Coul : in T_Piece; Dir :in T_Direction);
 -- {la piece de couleur Coul peut etre deplacee dans la direction Dir}
 --                                        => {V a ete mis a jour suite au deplacement}
 
