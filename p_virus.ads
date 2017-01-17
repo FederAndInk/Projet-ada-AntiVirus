@@ -25,16 +25,19 @@ package p_virus is
 	---- type pour la direction des deplacements des pieces
 	type T_Direction is (bg, hg, bd, hd);
 	package p_Direction_IO is new p_enum(T_Direction);
-
+	package p_Pieceenum_IO is new p_enum(T_Piece);
 
 --------------- Creation et Affichage de la grille
 
+function ReplaceCoul(coul: in t_piece) return character;
+--{} => {remplace une couleur par un character}
+
+function ReplaceCoul(coul: in integer) return t_piece;
+--{} => {remplace une couleur par un character}
+
+
 procedure InitVect(v: out tv_virus);
 --{} => {v is initilised by vide piece}
-
-function ReplaceCoul(coul : in T_Piece) return character;
---{} => {chaque valeur de v est remplacer par un "."
---ou un chiffre correspondant}
 
 
 procedure CreeVectVirus (f : in out file_type; nb : in integer; V :out TV_Virus);

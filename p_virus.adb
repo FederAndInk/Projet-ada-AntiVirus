@@ -38,6 +38,23 @@ begin
   end loop;
 end CreeVectVirus;
 
+
+function ReplaceCoul(coul: in t_piece) return character is
+--{} => {remplace une couleur par un character}
+begin
+  if coul /= vide then
+    return integer'image(t_piece'pos(coul))(2);
+  else return '.';
+  end if;
+end ReplaceCoul;
+
+function ReplaceCoul(coul: in integer) return t_piece is
+--{} => {remplace une couleur par un character}
+begin
+  return t_piece'val(coul);
+end ReplaceCoul;
+
+
 procedure AfficheVectVirus (V : in TV_Virus) is
 -- {} => {Les valeurs du vecteur V sont affichees sur une ligne}
 begin
@@ -48,35 +65,6 @@ begin
       end loop;
     end loop;
   end AfficheVectVirus;
-
-  function ReplaceCoul(coul : in T_Piece) return character is -- à ne ps confondre avec charcater
-  --{} => {associe pour chaque valeur de Coul un "."
-  --ou un chiffre correspondant}
-  begin
-    if coul = rouge then
-      return '0';
-    elsif coul = turquoise then
-      return '1';
-    elsif coul = orange then
-      return '2';
-    elsif coul = rose then
-      return '3';
-    elsif coul = marron then
-      return '4';
-    elsif coul = bleu then
-      return '5';
-    elsif coul = violet then
-      return '6';
-    elsif coul = vert then
-      return '7';
-    elsif coul = Jaune then
-      return '8';
-    elsif coul = blanc then
-      return '9';
-    else
-      return '.';
-    end if;
-  end ReplaceCoul;
 
   procedure AfficheGrille (V : in TV_Virus) is
   -- {} => {Le contenu du vecteur V est affiche dans une grille symbolisee
@@ -141,26 +129,34 @@ begin
   procedure Deplacement(V : in out TV_Virus; Coul : in T_Piece; Dir :in T_Direction) is
   -- {la piece de couleur Coul peut etre deplacee dans la direction Dir}
   -- => {V a ete mis a jour suite au deplacement}
+  newv : TV_virus := v;
   begin
     for i in v'range(1) loop
       for j in v'range(2) loop
+        if v(i,j) /= coul then
+          newv(i,j) := v(i,j);
+        else
+          newv(i,j) := vide;
+        end if;
+      end loop;
+    end loop;
+    for i in v'range(1) loop
+      for j in v'range(2) loop
         if coul = v(i,j) then
+          ecrire(i);ecrire(' ');ecrire(j);
           if Dir = bg then
-            v(i,j) := vide;
-            v(i+1,T_col'pred(j)) := coul;
+            newv(i+1,T_col'pred(j)) := coul;
           elsif Dir = hg then
-            v(i,j) := vide;
-            v(i-1,T_col'pred(j)) := coul;
+            newv(i-1,T_col'pred(j)) := coul;
           elsif Dir = bd then
-            v(i,j) := vide;
-            v(i+1,T_col'succ(j)) := coul;
+            newv(i+1,T_col'succ(j)) := coul;
           else
-            v(i,j) := vide;
-            v(i-1,T_col'succ(j)) := coul;
+            newv(i-1,T_col'succ(j)) := coul;
           end if;
         end if;
       end loop;
     end loop;
+    v := newv;
   end Deplacement;
 
   function Possible (V : in TV_Virus; Coul : in T_Piece; Dir : in T_Direction) return Boolean is
@@ -168,18 +164,21 @@ begin
   --                                             deplacee dans la direction Dir}
   tposs:Boolean;
   begin
+    if Coul = blanc then
+      return false;
+    end if;
     for i in v'range(1) loop
       for j in v'range(2) loop
         if v(i,j)=Coul then
           case Dir is
             when bg =>
-              tposs:=v(i+1,T_col'pred(j))=vide;
+              tposs:=v(i+1,T_col'pred(j))=vide or v(i+1,T_col'pred(j))=Coul;
             when hg =>
-              tposs:=v(i-1,T_col'pred(j))=vide;
+              tposs:=v(i-1,T_col'pred(j))=vide or v(i-1,T_col'pred(j))=Coul;
             when bd =>
-              tposs:=v(i+1,T_col'succ(j))=vide;
+              tposs:=v(i+1,T_col'succ(j))=vide or v(i+1,T_col'succ(j))=Coul;
             when hd =>
-              tposs:=v(i-1,T_col'succ(j))=vide;
+              tposs:=v(i-1,T_col'succ(j))=vide or v(i-1,T_col'succ(j))=Coul;
           end case;
           if not tposs then
             return false;
@@ -188,6 +187,8 @@ begin
       end loop;
     end loop;
     return true;
+    exception
+    when constraint_error => ecrire_ligne("Vous êtes contre un mur!");return false;
   end Possible;
 
 end p_virus;
