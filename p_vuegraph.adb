@@ -8,7 +8,6 @@ procedure LancerPartie(partie:out integer; continuer : out boolean) is
 begin --LancerPartie
 
   Fpartie:=DebutFenetre("Selection de la partie",700,700);
-  --AjouterChamp(Fpartie,"ChampNom","Votre Nom","quidam",100,10,280,30);
   AjouterBouton(Fpartie,"BoutonCommencer","Commencer !",225,650,70,50);
   AjouterBouton(Fpartie,"BoutonQuitter","Quitter",400,650,70,50); --(margeG, margeH, boutonL, boutonH)
   AjouterTexte(Fpartie, "Info", "", 260, 20, 160, 20);
@@ -63,5 +62,15 @@ begin --LancerPartie
 
 
 end LancerPartie;
+
+
+procedure LancerRegleJeu () is
+--{} => {a afficher les regles du jeu dans une fenetre}
+begin
+  FRegleJeu:=DebutFenetre("Regle du jeu",700,700);
+  AjouterBouton(FRegleJeu,"BoutonCommencer","Commencer !",225,650,70,50);
+  AjouterBouton(FRegleJeu,"BoutonQuitter","Quitter",400,650,70,50); --(margeG, margeH, boutonL, boutonH)
+  AjouterTexte(FRegleJeu, "Info", "", 260, 20, 160, 20);
+end LancerRegleJeu;
 
 end p_vuegraph;
