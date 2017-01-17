@@ -157,8 +157,12 @@ begin
           else
             v(i,j) := vide;
             v(i-1,T_col'succ(j)) := coul;
+          end if;
+        end if;
+      end loop;
+    end loop;
   end Deplacement;
-  
+
   function Possible (V : in TV_Virus; Coul : in T_Piece; Dir : in T_Direction) return Boolean is
   -- {P appartient a la grille V} => {resultat = vrai si la piece de couleur Coul peut etre
   --                                             deplacee dans la direction Dir}
