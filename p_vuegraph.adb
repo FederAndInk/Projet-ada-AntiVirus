@@ -1,7 +1,7 @@
 package body p_vuegraph is
 
 
-procedure LancerPartie(partie:out integer) is
+procedure LancerPartie(partie:out integer; continuer : out boolean) is
 --{} => {à affiché la fenetre Fpartie pour selectionner la partie}
   nombouton:string(1..2);
   I, J:integer;
@@ -11,6 +11,7 @@ begin --LancerPartie
   --AjouterChamp(Fpartie,"ChampNom","Votre Nom","quidam",100,10,280,30);
   AjouterBouton(Fpartie,"BoutonCommencer","Commencer !",225,650,70,50);
   AjouterBouton(Fpartie,"BoutonQuitter","Quitter",400,650,70,50); --(margeG, margeH, boutonL, boutonH)
+  AjouterTexte(Fpartie, "Info", "", 260, 20, 160, 20);
 
   -- pour les boutons des niveaux
   for I in 1..4 loop
@@ -47,13 +48,14 @@ begin --LancerPartie
         I:=Character'Pos(Bouton(Bouton'First)) - Character'Pos('0');
         J:=Character'Pos(Bouton(Bouton'Last)) - Character'Pos('0');
         partie:=(i-1)*5+J; --on donne la valeur du bouton :)
-        
+        ChangerTexte(Fpartie, "Info", "Partie selectionnee : " & integer'image(partie));
       end if;
       if Bouton="BoutonQuitter" then
         CacherFenetre(Fpartie);
+        continuer:=false;
       elsif Bouton="BoutonCommencer" then
         CacherFenetre(Fpartie);
-        --MontrerFenetre();
+        continuer:=true;
       end if;
       exit when Bouton="BoutonQuitter" or Bouton="BoutonCommencer";
     end;

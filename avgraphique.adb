@@ -11,13 +11,14 @@ procedure avgraphique is
   partieNum:integer;
   v_grille:tv_virus;
   fconfinit:file_type;
+  keepgoing:boolean;
 begin --avgraphique
   open(fconfinit , in_file, "Parties");
   InitialiserFenetres;
-  LancerPartie(partieNum);
-  --ecrire_ligne(partieNum);
-  ecrire("test");
-  InitVect(v_grille);
-  CreeVectVirus(fConfInit,partieNum, v_grille);
-  AfficheGrille(v_grille);
+  LancerPartie(partieNum, keepgoing);
+  if keepgoing then
+    InitVect(v_grille);
+    CreeVectVirus(fConfInit,partieNum, v_grille);
+    AfficheGrille(v_grille);
+  end if;
 end avgraphique;
