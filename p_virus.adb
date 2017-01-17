@@ -125,11 +125,31 @@ begin
     return v(i,j)=Coul;
   end presente;
 
-  function Possible (V : in TV_Virus; Coul : in T_Piece; Dir : in T_Direction) return Boolean;
+  function Possible (V : in TV_Virus; Coul : in T_Piece; Dir : in T_Direction) return Boolean is
   -- {P appartient a la grille V} => {resultat = vrai si la piece de couleur Coul peut etre
   --                                             deplacee dans la direction Dir}
+  tposs:Boolean;
   begin
-
+    for i in v'range(1) loop
+      for j in v'range(2) loop
+        if v(i,j)=Coul then
+          case Dir is
+            when bg =>
+              tposs:=v(i+1,T_col'pred(j))=vide;
+            when hg =>
+              tposs:=v(i-1,T_col'pred(j))=vide;
+            when bd =>
+              tposs:=v(i+1,T_col'succ(j))=vide;
+            when hd =>
+              tposs:=v(i-1,T_col'succ(j))=vide;
+          end case;
+          if not tposs then
+            return false;
+          end if;
+        end if;
+      end loop;
+    end loop;
+    return true;
   end Possible;
 
 

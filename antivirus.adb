@@ -9,4 +9,5 @@ begin --antivirus
   CreeVectVirus(fConfInit, 1, v_grille);
   --AfficheVectVirus(v_grille);
   AfficheGrille(v_grille);
+  ecrire_ligne(Possible(v_grille, violet, hd));
 end antivirus;
