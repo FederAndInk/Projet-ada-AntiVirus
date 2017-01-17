@@ -2,3 +2,4 @@ antivirus
 *.o
 *.ali
 testGraph
+b~*
