@@ -137,4 +137,29 @@ begin
     return v(i,j)=Coul;
   end presente;
 
+  procedure Deplacement(V : in out TV_Virus; Coul : in T_Piece; Dir :in T_Direction) is
+  -- {la piece de couleur Coul peut etre deplacee dans la direction Dir}
+  -- => {V a ete mis a jour suite au deplacement}
+  begin
+    for i in v'range(1) loop
+      for j in v'range(2) loop
+        if coul = v(i,j) then
+          if Dir = bg then
+            v(i,j) := vide;
+            v(i+1,T_col'pred(j)) := coul;
+          elsif Dir = hg then
+            v(i,j) := vide;
+            v(i-1,T_col'pred(j)) := coul;
+          elsif Dir = bd then
+            v(i,j) := vide;
+            v(i+1,T_col'succ(j)) := coul;
+          else
+            v(i,j) := vide;
+            v(i-1,T_col'succ(j)) := coul;
+          end if;
+        end if;
+      end loop;
+    end loop;
+  end Deplacement;
+
 end p_virus;
