@@ -85,17 +85,29 @@ begin
   --			un chiffre = numero de la couleur de la piece presente dans la case
   --			le caractere 'B' = piece blanche fixe
   -- 			rien = pas une case}
-    nb : integer;
+  j : character;
   begin
-    nb := 0;
-    ecrire_ligne("\  A  B  C  D  E  F  G");
-    ecrire_ligne(" \ ===================");
+    ecrire_ligne("\    A  B  C  D  E  F  G");
+    ecrire_ligne(" \   ===================");
     for i in v'range(1) loop
-    a_la_ligne;  ecrire(i); ecrire("|  ");
-      for j in v'range(2) loop
-        nb := nb+1;
+      a_la_ligne;  ecrire(i); ecrire("|  ");
+      if 0 = i mod 2 then
+        j := T_col'succ(v'first(2));
+      else
+        j := v'first(2);
+      end if;
+      while j <= v'last(2) loop
+        if (j = t_col'succ(v'first(2))) then
+          ecrire("   ");
+        end if;
         ecrire(ReplaceCoul(v(i,j)));
-        ecrire(" ");
+        ecrire("     ");
+        if j/= T_col'succ(v'last(2)) then
+          j := T_col'succ(j);
+          if j/= T_col'succ(v'last(2)) then
+            j := T_col'succ(j);
+          end if;
+        end if;
       end loop;
     end loop;
   end AfficheGrille;
