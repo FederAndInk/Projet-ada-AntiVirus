@@ -9,7 +9,7 @@ package p_vuegraph is
 --deux fenetres pour choisir la partie, puis jouer la partie.
 Fpartie, FJeu : TR_Fenetre;
 
-procedure LancerPartie;
+procedure LancerPartie(partie:out integer);
 --{} => {à affiché la fenetre Fpartie pour selectionner la partie}
 
 end p_vuegraph;
