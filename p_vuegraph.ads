@@ -17,7 +17,7 @@ NewLine : constant Character := Character'Val (10);
 
 ---------------------Corps
 
-procedure LancerPartie(partie:out integer; continuer : out boolean);
+procedure LancerPartie(f : in out file_type; partie:out integer; continuer : out boolean);
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
 
 procedure InitGrid(Fen : in out TR_Fenetre; name : in string; X, Y, cote, ecart:in natural);

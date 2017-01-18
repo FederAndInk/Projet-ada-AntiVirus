@@ -1,7 +1,7 @@
 package body p_vuegraph is
 
 
-procedure LancerPartie(partie:out integer; continuer : out boolean) is
+procedure LancerPartie(f : in out file_type ;partie:out integer; continuer : out boolean) is
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
   nombouton:string(1..2);
   I, J:integer;
@@ -11,6 +11,8 @@ begin --LancerPartie
   Fpartie:=DebutFenetre("Selection de la partie",700,700);
   AjouterBouton(Fpartie,"BoutonCommencer","Commencer !",225,650,70,50);
   AjouterBouton(Fpartie,"BoutonQuitter","Quitter",400,650,70,50); --(margeG, margeH, boutonL, boutonH)
+  AjouterBouton(Fpartie,"BoutonTuto","Regles",325,650,70,50);
+
   AjouterTexte(Fpartie, "Info", "", 260, 20, 160, 20);
 
   -- pour les boutons des niveaux
@@ -60,6 +62,8 @@ begin --LancerPartie
         continuer:=true;
       elsif Bouton="BoutonCommencer" and partie=21 then
         ChangerTexte(Fpartie, "Info", "Selectionner une partie !");
+      elsif bouton="BoutonTuto" then
+        LancerRegleJeu(f);
       end if;
       exit when Bouton="BoutonQuitter" or (Bouton="BoutonCommencer" and partie/=21);
     end testBouton;

@@ -15,9 +15,8 @@ procedure avgraphique is
 begin --avgraphique
   open(fconfinit , in_file, "Parties");
   InitialiserFenetres;
-  LancerRegleJeu(fconfinit);
 
-  LancerPartie(partieNum, keepgoing);
+  LancerPartie(fconfinit, partieNum, keepgoing);
   if keepgoing then
     InitVect(v_grille);
     CreeVectVirus(fConfInit,partieNum, v_grille);
