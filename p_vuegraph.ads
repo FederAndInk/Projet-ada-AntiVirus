@@ -35,8 +35,19 @@ procedure Regle2Block(v:in out TV_Virus; quitter: out Boolean);
 procedure LancerRegleJeu(f:in out file_type);
 --{} => {a afficher les regles du jeu dans une fenetre}
 
---procedure LancerJeu(...); --todo
+--procedure Bouton(...);
+----{} => {}
+
+--procedure clicPiece(...);
+----{} => {}
+
+--procedure LancerJeu(...); --todo et ne pas oublier de detecter la fin
 --{} => {a affiché la fenetre de jeu}
+
+
+--procedure score(...);
+----{} => {a afficher les scores avec le nombre de coups et le temps passé}
+
 
 
 
