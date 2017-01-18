@@ -143,7 +143,7 @@ begin
     for i in v'range(1) loop
       for j in v'range(2) loop
         if coul = v(i,j) then
-          ecrire(i);ecrire(' ');ecrire(j);
+          --ecrire(i);ecrire(' ');ecrire(j);
           if Dir = bg then
             newv(i+1,T_col'pred(j)) := coul;
           elsif Dir = hg then
@@ -170,16 +170,25 @@ begin
     for i in v'range(1) loop
       for j in v'range(2) loop
         if v(i,j)=Coul then
-          case Dir is
-            when bg =>
-              tposs:=v(i+1,T_col'pred(j))=vide or v(i+1,T_col'pred(j))=Coul;
-            when hg =>
-              tposs:=v(i-1,T_col'pred(j))=vide or v(i-1,T_col'pred(j))=Coul;
-            when bd =>
-              tposs:=v(i+1,T_col'succ(j))=vide or v(i+1,T_col'succ(j))=Coul;
-            when hd =>
-              tposs:=v(i-1,T_col'succ(j))=vide or v(i-1,T_col'succ(j))=Coul;
-          end case;
+            case Dir is
+              when bg =>
+                tposs:=not (i=v'last(1) or j=v'first(2))
+                      and then (v(i+1,T_col'pred(j))=vide
+                      or v(i+1,T_col'pred(j))=Coul);
+              when hg =>
+
+                tposs:= not (i=v'first(1) or j=v'first(2))
+                        and then (v(i-1,T_col'pred(j))=vide
+                        or v(i-1,T_col'pred(j))=Coul);
+              when bd =>
+                tposs:=not (i=v'last(1) or j=v'last(2))
+                      and then (v(i+1,T_col'succ(j))=vide
+                      or v(i+1,T_col'succ(j))=Coul);
+              when hd =>
+                tposs:=not (i=v'first(1) or j=v'last(2))
+                      and then (v(i-1,T_col'succ(j))=vide
+                      or v(i-1,T_col'succ(j))=Coul);
+            end case;
           if not tposs then
             return false;
           end if;
