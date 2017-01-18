@@ -10,9 +10,9 @@ with ada.directories; use ada.directories;
 
 procedure avgraphique is
   partieNum, nbcoup:integer;
-  v_grille:tv_virus;
+  v_grille : tv_virus;
   fconfinit:p_Piece_IO.file_type;
-  keepgoing:boolean;
+  keepgoing : boolean;
   nom: string(1..2);
   f_score : p_score_IO.file_type;
   vscore : TR_score;

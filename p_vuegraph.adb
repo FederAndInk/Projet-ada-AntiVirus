@@ -402,30 +402,33 @@ end LancerRegleJeu;
 
 procedure LancerScores(f: in out p_score_IO.file_type) is
 ----{} => {}
-  Fscore : TR_Fenetre;
+
 begin
   Fscore:=DebutFenetre("SCORE",400,600);--TODO Affichage texte ascenseur pause tant que les tris ne sont pas prêt
 
-  ajoutchamps(Fscore, "saisienom","Saisir votre nom", "Moins de 15 caractère...", 500, 400, 50, 30);
+  Ajouterchamp(Fscore, "saisienom","Saisir votre nom", "Moins de 15 caractère...", 500, 400, 50, 30);
   AjouterBouton(Fscore,"boutonValdier","valider",500,400,50,50);
 
 
 
-  FinFenetre(Fjeu);
-  MontrerFenetre(Fjeu);
+  FinFenetre(Fscore);
+  MontrerFenetre(Fscore);
+  if  AttendreBouton(Fscore) then
+    ecrire("we did it!");
+  end if;
 
 end LancerScores;
 
 -----------------------------------------fin score------------------------------------------------------
 
 
-function infstrict(a,b : TR_score) is
+function infstrict(a,b : TR_score) return boolean is
 --{} => {}
 begin
   return (a.nom <b.nom) or (a.nom = b.nom and a.score<b.score);
 end infstrict;
 
-procedure premut(a,b : TR_score) is
+procedure permut(a,b : in out TR_score) is
 --{} => {}
 c : TR_score;
 begin
@@ -434,14 +437,13 @@ begin
   b := c;
 end permut;
 
-procedure trinom is
+procedure trinom(v : in out tv_score) is
 --{} => {}
-
 begin
-  for i in vscore'range loop
+  for i in v'range loop
     for j in reverse i+1..v'last loop
-      if infstrict(vscore(i),vscore(j)) then
-        premut(vscore(i),vscore(j));
+      if infstrict(v(i),v(j)) then
+        permut(v(i),v(j));
       end if;
     end loop;
   end loop;
@@ -451,13 +453,13 @@ end trinom;
 --procedure tridate
 --procedure triniveau
 
-procedure triVect(f : in out p_Piece_IO.file_type; Vscore : in out TR_score) is
---{} => {}
-
-begin
-
-
-
-end triVect;
+--procedure triVect(f : in out p_Piece_IO.file_type; V : in out TR_score) is
+----{} => {}
+--
+--begin
+--ecrire("bjr");
+--
+--
+--end triVect;
 
 end p_vuegraph;
