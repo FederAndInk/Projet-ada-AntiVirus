@@ -11,20 +11,24 @@ well launch the antivirus program in a shell ;)
     - Download libraries : putlink
 
 ### B. second you will update your path for the compiler know where they are :
+```bash
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:[Path/to/the/folder]/adabib/lib
+```
 
 ### C. third use this options to compile the code (make a script) :
 
-    #!/bin/bash
-    ADA_BIB="[Path/to/the/folder]/adabib"
-    ADAX_PATH="$ADA_BIB/x11ada"
-    ADA_FORMS="$ADA_BIB/lib"
-    ADA_OBJECTS_PATH="$ADAX_PATH:$ADA_OBJECTS_PATH"
-    ADA_INCLUDE_PATH="$ADAX_PATH:$ADA_INCLUDE_PATH"
-    LD_LIBRARY_PATH="$ADA_FORMS"
-    export ADA_OBJECTS_PATH ADA_INCLUDE_PATH LD_LIBRARY_PATH
-    LARGS="-L$ADA_FORMS -largs -lforms -largs ${ADAX_PATH}/var.o -largs -lX11 -largs -lXt"
-    gnatmake $* $LARGS
+```bash
+#!/bin/bash
+ADA_BIB="[Path/to/the/folder]/adabib"
+ADAX_PATH="$ADA_BIB/x11ada"
+ADA_FORMS="$ADA_BIB/lib"
+ADA_OBJECTS_PATH="$ADAX_PATH:$ADA_OBJECTS_PATH"
+ADA_INCLUDE_PATH="$ADAX_PATH:$ADA_INCLUDE_PATH"
+LD_LIBRARY_PATH="$ADA_FORMS"
+export ADA_OBJECTS_PATH ADA_INCLUDE_PATH LD_LIBRARY_PATH
+LARGS="-L$ADA_FORMS -largs -lforms -largs ${ADAX_PATH}/var.o -largs -lX11 -largs -lXt"
+gnatmake $* $LARGS
+```
 
 don't forget the rights ! (+x)
 
