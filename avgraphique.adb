@@ -20,7 +20,8 @@ begin --avgraphique
   if keepgoing then
     InitVect(v_grille);
     CreeVectVirus(fConfInit,partieNum, v_grille);
-    AfficheGrille(v_grille);
+    --AfficheGrille(v_grille);
+    LancerJeu(v_grille,fconfinit, keepgoing);
 
     --LancerRegleJeu; --test regle jeu
   end if;

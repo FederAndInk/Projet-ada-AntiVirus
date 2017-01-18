@@ -155,8 +155,113 @@ begin --InitGrid
   end loop;
 end InitGrid;
 
+--------------------Pour fenêtre principale-------------------------------
 
-------------------------------------------------------
+procedure BoutonF(v : in out TV_Virus; f : in out file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre) is
+--{} => {}
+  Dir: T_Direction;
+begin
+  Quitter := false;
+
+    loop
+    blockBouton:
+      declare
+        bouton : String := (AttendreBouton(win));
+      begin
+        ecrire("test3");
+        ecrire_ligne(bouton);
+        if bouton = "BoutonQuitter" then
+          CacherFenetre(win);
+          Quitter := true;
+        elsif bouton = "BoutonTuto" then
+          LancerRegleJeu(f);
+        elsif Bouton = "hd" and coul/=vide and coul/=blanc then
+          Dir := hd;
+          if possible(v,coul, Dir) then
+            Deplacement(v,coul, Dir);
+          end if;
+        elsif Bouton = "hg" and coul/=vide and coul/=blanc then
+          Dir := hg;
+          if possible(v,coul, Dir) then
+            Deplacement(v,coul, Dir);
+          end if;
+        elsif Bouton = "bd" and coul/=vide and coul/=blanc then
+          Dir := bd;
+          if possible(v,coul, Dir) then
+            Deplacement(v,coul, Dir);
+          end if;
+        elsif Bouton = "bg" and coul/=vide and coul/=blanc  then
+          Dir := bg;
+          if possible(v,coul, Dir) then
+            Deplacement(v,coul, Dir);
+          end if;
+        else
+          coul := v(integer'value(bouton(1..1)),bouton(2));
+          ecrire(t_piece'image(coul));
+        end if;
+    end blockBouton;
+    exit when Gueri(v);
+    MajAffichage(v,win);
+  end loop;
+end boutonF;
+--------------------ouvrir fenêtre principale-------------------------------
+procedure LancerJeu(v: in out tv_virus; f : in out file_type; quitter : out boolean) is --todo et ne pas oublier de detecter la fin
+--{} => {a affiché la fenetre de jeu}
+-->> TODO nbcoup-------------------------------------------------
+FJeu : TR_Fenetre;
+hauteur, x, y, cote, ecart : natural;
+coul : t_piece:= vide;
+begin
+  x := 50;
+  y := 40;
+  cote:= 30;
+  ecart:= 5;
+  hauteur := 25;
+
+  InitialiserFenetres;
+  Fjeu:=DebutFenetre("AntiVirus",800,700);
+  AjouterBouton(Fjeu,"hg","hg",500,400,50,50);
+  AjouterBouton(Fjeu,"hd","hd",560,400,50,50);
+  AjouterBouton(Fjeu,"bg","bg",500,460,50,50);
+  AjouterBouton(Fjeu,"bd","bd",560,460,50,50);
+  AjouterBouton(Fjeu,"bg","bg",500,460,50,50);
+  AjouterBouton(Fjeu,"bd","bd",560,460,50,50);
+
+  AjouterBouton(Fjeu,"BoutonQuitter","BoutonQuitter",145,650,70,50);
+  AjouterBouton(Fjeu,"BoutonTuto","BoutonTuto",320,650,70,50);
+
+
+
+
+  AjouterTexte(Fjeu,"A", "A", 58, hauteur, 20, 20);
+  AjouterTexte(Fjeu,"B", "B", 93, hauteur, 20, 20);
+  AjouterTexte(Fjeu,"C", "C", 128, hauteur, 20, 20);
+  AjouterTexte(Fjeu,"D", "D", 162, hauteur, 20, 20);
+  AjouterTexte(Fjeu,"E", "E", 196, hauteur, 20, 20);
+  AjouterTexte(Fjeu,"F", "F", 230, hauteur, 20, 20);
+  AjouterTexte(Fjeu,"G", "G", 264, hauteur, 20, 20);
+  AjouterTexte(Fjeu,"1", "1", 20, 60, 20, 20);
+  AjouterTexte(Fjeu,"2", "2", 20, 100, 20, 20);
+  AjouterTexte(Fjeu,"3", "3", 20, 140, 20, 20);
+  AjouterTexte(Fjeu,"4", "4", 20, 180, 20, 20);
+  AjouterTexte(Fjeu,"5", "5", 20, 220, 20, 20);
+  AjouterTexte(Fjeu,"6", "6", 20, 260, 20, 20);
+  AjouterTexte(Fjeu,"7", "7", 20, 300, 20, 20);
+  InitGrid(FJeu, "", x, y, cote, ecart);
+  FinFenetre(Fjeu);
+  MontrerFenetre(Fjeu);
+  MajAffichage(v, Fjeu);
+
+
+  ecrire("test1");
+  BoutonF(v, f,Quitter, coul, fjeu);
+  ecrire("test2");
+
+end LancerJeu;
+
+
+
+---------------------Pour tuto---------------------------------
 
 procedure Regle1Block(v : in out TV_Virus; quitter: out Boolean) is
   task Regle1;  --pour afficher une magnifique animation qui s'arrete lorsqu'on appuis sur quitter ou continuer
@@ -235,6 +340,7 @@ begin
   --AjouterBouton(FRegleJeu,nombouton,"",(jpos-1)*35+50,(I-1)*35+40,30,30); --la multiplication permet d'appliquer des ecarts entre les boutons et l'ajout, l'ecarts aux bords.
   InitGrid(FRegleJeu, "", 50, 40, 60, 5);
   FinFenetre(FRegleJeu);
+
   InitVect(v);
   CreeVectVirus(f,1, v);
   MontrerFenetre(FRegleJeu);

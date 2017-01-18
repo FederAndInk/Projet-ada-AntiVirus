@@ -49,7 +49,7 @@ begin
 end ReplaceCoul;
 
 function ReplaceCoul(coul: in integer) return t_piece is
---{} => {remplace une couleur par un character}
+--{} => {remplace un charactère par une couleur}
 begin
   return t_piece'val(coul);
 end ReplaceCoul;

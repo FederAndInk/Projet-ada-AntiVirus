@@ -35,13 +35,12 @@ procedure Regle2Block(v:in out TV_Virus; quitter: out Boolean);
 procedure LancerRegleJeu(f:in out file_type);
 --{} => {a afficher les regles du jeu dans une fenetre}
 
---procedure Bouton(...);
-----{} => {}
 
---procedure clicPiece(...);
-----{} => {}
+procedure BoutonF(v : in out TV_Virus; f : in out file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre);
+--{} => {}
 
---procedure LancerJeu(...); --todo et ne pas oublier de detecter la fin
+
+procedure LancerJeu(v: in out tv_virus; f : in out file_type; quitter : out boolean); --todo et ne pas oublier de detecter la fin
 --{} => {a affiché la fenetre de jeu}
 
 

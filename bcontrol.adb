@@ -11,7 +11,7 @@ procedure bcontrol is
 FJeu : TR_Fenetre;
 hauteur, x, y, cote, ecart : natural;
 v_grille : tv_virus;
-Dir:= T_Direction;
+Dir: T_Direction;
 pieceselect : integer;
 begin
 x := 50;
@@ -55,28 +55,28 @@ hauteur := 25;
   if AttendreBouton(Fjeu) = "hd"  then
     Dir := hd;
     if possible(v_grille,ReplaceCoul(pieceselect), Dir) then
-      Deplacement(v_grille,ReplaceCoul(pieceselect), Dir)
+      Deplacement(v_grille,ReplaceCoul(pieceselect), Dir);
     end if;
 
   end if;
   if AttendreBouton(Fjeu) = "hg"  then
     Dir := hg;
     if possible(v_grille,ReplaceCoul(pieceselect), Dir) then
-      Deplacement(v_grille,ReplaceCoul(pieceselect), Dir)
+      Deplacement(v_grille,ReplaceCoul(pieceselect), Dir);
     end if;
 
   end if;
   if AttendreBouton(Fjeu) = "bd"  then
     Dir := bd;
     if possible(v_grille,ReplaceCoul(pieceselect), Dir) then
-      Deplacement(v_grille,ReplaceCoul(pieceselect), Dir)
+      Deplacement(v_grille,ReplaceCoul(pieceselect), Dir);
     end if;
 
   end if;
   if AttendreBouton(Fjeu) = "bg"  then
     Dir := bg;
     if possible(v_grille,ReplaceCoul(pieceselect), Dir) then
-      Deplacement(v_grille,ReplaceCoul(pieceselect), Dir)
+      Deplacement(v_grille,ReplaceCoul(pieceselect), Dir);
     end if;
 
   end if;
