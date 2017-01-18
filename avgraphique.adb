@@ -8,13 +8,16 @@ with text_io; use p_virus.p_Piece_IO;
 use p_virus.p_Direction_IO, p_virus.p_Pieceenum_IO;
 
 procedure avgraphique is
-  partieNum:integer;
+  partieNum, nbcoup:integer;
   v_grille:tv_virus;
   fconfinit:file_type;
   keepgoing:boolean;
+  nom: string(1..2);
 begin --avgraphique
   open(fconfinit , in_file, "Parties");
   InitialiserFenetres;
+  nbcoup:=1;
+  --fenetre nom...
 
   LancerPartie(fconfinit, partieNum, keepgoing);
   if keepgoing then
@@ -23,6 +26,7 @@ begin --avgraphique
     --AfficheGrille(v_grille);
     LancerJeu(v_grille,fconfinit, keepgoing);
 
+    LancerFin(nbcoup, nom);
     --LancerRegleJeu; --test regle jeu
   end if;
 end avgraphique;
