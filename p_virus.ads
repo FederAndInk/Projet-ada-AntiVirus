@@ -6,6 +6,8 @@ package p_virus is
 
 --------------- Types pour representer les pieces et la grille de jeu
 
+
+
 	subtype T_Col is character range 'A'..'G';
 	subtype T_Lig is integer range 1..7;
 	type T_Piece is (rouge, turquoise, orange, rose, marron, bleu, violet, vert, jaune, blanc, vide);
@@ -21,7 +23,6 @@ package p_virus is
 
 	---- type pour le vecteur representant la grille
 	type TV_Virus is array (T_lig,T_col) of T_Piece;
-
 	---- type pour la direction des deplacements des pieces
 	type T_Direction is (bg, hg, bd, hd);
 	package p_Direction_IO is new p_enum(T_Direction);
