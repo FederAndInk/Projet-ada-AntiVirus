@@ -4,26 +4,38 @@ with p_esiut; use p_esiut;
 with ada.calendar; use ada.calendar;
 with p_virus; use p_virus;
 with sequential_IO; use p_virus.p_Piece_IO;
+with ada.directories; use ada.directories;
 
 with Ada.Task_Identification;  use Ada.Task_Identification;
 
 package p_vuegraph is
 ----------------------Declarations
 
+type TR_score is record
+  nom : string(1..15);
+  score : integer;
+  niveau : natural;
+  date : time;
+end record;
+
 --deux fenetres pour choisir la partie, puis jouer la partie.
 Fpartie, FJeu, FRegleJeu , Ffin: TR_Fenetre;
 NewLine : constant Character := Character'Val (10);
 
+package p_score_IO is new sequential_IO (TR_score); use p_score_IO;
 
 ---------------------Corps
 
-procedure LancerPartie(f : in out file_type; partie:out integer; continuer : out boolean);
+procedure triVect(f:in out p_Piece_IO.file_type; Vscore : in out TR_score);
+--{} => {}
+
+procedure LancerPartie(f : in out p_Piece_IO.file_type; partie:out integer; continuer : out boolean);
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
 
 procedure LancerFin(nbcoup : in integer; nom : in string);
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
 
---procedure LancerScores(f: in out file_type);
+procedure LancerScores(f: in out p_score_IO.file_type);
 ----{} => {}
 
 procedure InitGrid(Fen : in out TR_Fenetre; name : in string; X, Y, cote, ecart:in natural);
@@ -38,17 +50,24 @@ procedure Regle1Block(v : in out TV_Virus; quitter: out Boolean);
 procedure Regle2Block(v:in out TV_Virus; quitter: out Boolean);
 --{} => {Pour le tuto, deplace la piece rouge}
 
-procedure LancerRegleJeu(f:in out file_type);
+procedure LancerRegleJeu(f:in out p_Piece_IO.file_type);
 --{} => {a afficher les regles du jeu dans une fenetre}
 
 
-procedure BoutonF(v : in out TV_Virus; f : in out file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre);
+procedure BoutonF(v : in out TV_Virus; f : in out p_Piece_IO.file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre);
 --{} => {}
 
 
-procedure LancerJeu(v: in out tv_virus; f : in out file_type; quitter : out boolean); --todo et ne pas oublier de detecter la fin
+
+function infstrict(a,b : TR_score);
+--{} => {}
+procedure premut(a,b : TR_score);
+--{} => {}
+
+procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean); --todo et ne pas oublier de detecter la fin
 
 --{} => {a affiché la fenetre de jeu}
+
 
 
 --procedure score(...);

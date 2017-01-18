@@ -1,7 +1,7 @@
 package body p_vuegraph is
 
 
-procedure LancerPartie(f : in out file_type ;partie:out integer; continuer : out boolean) is
+procedure LancerPartie(f : in out p_Piece_IO.file_type ;partie:out integer; continuer : out boolean) is
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
   nombouton:string(1..2);
   I, J:integer;
@@ -174,7 +174,7 @@ end InitGrid;
 
 --------------------Pour fenêtre principale-------------------------------
 
-procedure BoutonF(v : in out TV_Virus; f : in out file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre) is
+procedure BoutonF(v : in out TV_Virus; f : in out p_Piece_IO.file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre) is
 --{} => {}
   Dir: T_Direction;
 begin
@@ -222,7 +222,7 @@ begin
   end loop;
 end boutonF;
 --------------------ouvrir fenêtre principale-------------------------------
-procedure LancerJeu(v: in out tv_virus; f : in out file_type; quitter : out boolean) is --todo et ne pas oublier de detecter la fin
+procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean) is --todo et ne pas oublier de detecter la fin
 --{} => {a affiché la fenetre de jeu}
 -->> TODO nbcoup-------------------------------------------------
 FJeu : TR_Fenetre;
@@ -343,12 +343,12 @@ end Regle2Block;
 
 
 
-procedure LancerRegleJeu(f:in out file_type) is
+procedure LancerRegleJeu(f:in out p_Piece_IO.file_type) is
 --{f ouvert} => {a afficher les regles du jeu dans une fenetre}
   V:TV_Virus;
   Q:boolean;
 begin
-  reset(f, in_file);
+  reset(f, p_Piece_IO.in_file);
 
   FRegleJeu:=DebutFenetre("Regle du jeu",550,700);
   AjouterBouton(FRegleJeu,"BoutonContinuer","Continuer",145,650,70,50);
@@ -396,5 +396,68 @@ begin
   --  ecrire("test");
   --end if;
 end LancerRegleJeu;
+
+-----------------------------------------Partie score------------------------------------------------------
+
+
+procedure LancerScores(f: in out p_score_IO.file_type) is
+----{} => {}
+  Fscore : TR_Fenetre;
+begin
+  Fscore:=DebutFenetre("SCORE",400,600);--TODO Affichage texte ascenseur pause tant que les tris ne sont pas prêt
+
+  ajoutchamps(Fscore, "saisienom","Saisir votre nom", "Moins de 15 caractère...", 500, 400, 50, 30);
+  AjouterBouton(Fscore,"boutonValdier","valider",500,400,50,50);
+
+
+
+  FinFenetre(Fjeu);
+  MontrerFenetre(Fjeu);
+
+end LancerScores;
+
+-----------------------------------------fin score------------------------------------------------------
+
+
+function infstrict(a,b : TR_score) is
+--{} => {}
+begin
+  return (a.nom <b.nom) or (a.nom = b.nom and a.score<b.score);
+end infstrict;
+
+procedure premut(a,b : TR_score) is
+--{} => {}
+c : TR_score;
+begin
+  c := a;
+  a:= b;
+  b := c;
+end permut;
+
+procedure trinom is
+--{} => {}
+
+begin
+  for i in vscore'range loop
+    for j in reverse i+1..v'last loop
+      if infstrict(vscore(i),vscore(j)) then
+        premut(vscore(i),vscore(j));
+      end if;
+    end loop;
+  end loop;
+end trinom;
+
+--procedure triscore
+--procedure tridate
+--procedure triniveau
+
+procedure triVect(f : in out p_Piece_IO.file_type; Vscore : in out TR_score) is
+--{} => {}
+
+begin
+
+
+
+end triVect;
 
 end p_vuegraph;
