@@ -18,13 +18,13 @@ begin --avgraphique
   InitialiserFenetres;
   nbcoup:=1;
   --fenetre nom...
-  nom:="Ha";
 
   LancerPartie(fconfinit, partieNum, keepgoing);
   if keepgoing then
     InitVect(v_grille);
     CreeVectVirus(fConfInit,partieNum, v_grille);
-    AfficheGrille(v_grille);
+    --AfficheGrille(v_grille);
+    LancerJeu(v_grille,fconfinit, keepgoing);
 
     LancerFin(nbcoup, nom);
     --LancerRegleJeu; --test regle jeu
