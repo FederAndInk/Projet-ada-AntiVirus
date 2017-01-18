@@ -20,14 +20,14 @@ end record;
 type tv_score is array (integer range <>) of TR_score;
 
 --deux fenetres pour choisir la partie, puis jouer la partie.
-Fpartie, FJeu, FRegleJeu , Ffin, Fscore : TR_Fenetre; 
+Fpartie, FJeu, FRegleJeu , Ffin, Fscore : TR_Fenetre;
 NewLine : constant Character := Character'Val (10);
 
 package p_score_IO is new sequential_IO (TR_score); use p_score_IO;
 
 ---------------------Corps
 
-procedure LancerPartie(f : in out p_Piece_IO.file_type; partie:out integer; continuer : out boolean);
+procedure LancerPartie(f : in out p_Piece_IO.file_type; partie:out integer; Quitter : out boolean);
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
 
 procedure LancerFin(nbcoup : in integer; nom : in string);
@@ -52,7 +52,7 @@ procedure LancerRegleJeu(f:in out p_Piece_IO.file_type);
 --{} => {a afficher les regles du jeu dans une fenetre}
 
 
-procedure BoutonF(v : in out TV_Virus; f : in out p_Piece_IO.file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre);
+procedure BoutonF(v : in out TV_Virus; f : in out p_Piece_IO.file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre; nbmove: out integer);
 --{} => {}
 
 
@@ -65,7 +65,7 @@ function infstrict(a,b : TR_score) return boolean;
 procedure permut(a,b : in out TR_score);
 --{} => {}
 
-procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean); --todo et ne pas oublier de detecter la fin
+procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean; nbmove: out integer);
 
 --{} => {a affiché la fenetre de jeu}
 

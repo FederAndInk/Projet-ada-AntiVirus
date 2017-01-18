@@ -1,12 +1,13 @@
 package body p_vuegraph is
 
 
-procedure LancerPartie(f : in out p_Piece_IO.file_type ;partie:out integer; continuer : out boolean) is
+procedure LancerPartie(f : in out p_Piece_IO.file_type ;partie:out integer; quitter : out boolean) is
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
   nombouton:string(1..2);
   I, J:integer;
 begin --LancerPartie
   partie:=21; --initialisation de partie pour savoir si l'utilisateur en a choisi une
+  quitter:=false;
 
   Fpartie:=DebutFenetre("Selection de la partie",700,700);
   AjouterBouton(Fpartie,"BoutonCommencer","Commencer !",225,650,70,50);
@@ -56,16 +57,15 @@ begin --LancerPartie
 
       if Bouton="BoutonQuitter" then
         CacherFenetre(Fpartie);
-        continuer:=false;
+        quitter:=true;
       elsif Bouton="BoutonCommencer" and partie/=21 then
         CacherFenetre(Fpartie);
-        continuer:=true;
       elsif Bouton="BoutonCommencer" and partie=21 then
         ChangerTexte(Fpartie, "Info", "Selectionner une partie !");
       elsif bouton="BoutonTuto" then
         LancerRegleJeu(f);
       end if;
-      exit when Bouton="BoutonQuitter" or (Bouton="BoutonCommencer" and partie/=21);
+      exit when quitter or (Bouton="BoutonCommencer" and partie/=21);
     end testBouton;
   end loop;
 
@@ -129,7 +129,12 @@ begin --MajAffichage
     while j <= v'last(2) loop
       nombouton := Integer'Image(I)(2..2) & J;
       ChangerCouleurFond(Fen,nombouton,convertPiece(v(i,j)));
-      --v(i,j)));
+      if v(i,j)=blanc or v(i,j)=vide then
+        ChangerEtatBouton(fen, nombouton, arret);
+      else
+        ChangerEtatBouton(fen, nombouton, marche);
+      end if;
+
       if j/= T_col'succ(v'last(2)) then
         j := T_col'succ(j);
         if j/= T_col'succ(v'last(2)) then
@@ -161,7 +166,6 @@ begin --InitGrid
       jpos:=T_col'pos(j)-64; -- Important permet d'avoir la position de j par rapport à T_col
       -- le bouton en i,j s'appelle "ij" et affiche la valeur (i-1)*5+J
       AjouterBouton(Fen,nombouton,name,(jpos-1)*(cote+ecart)+X,(I-1)*(cote+ecart)+Y,cote,cote); --la multiplication permet d'appliquer des ecarts entre les boutons et l'ajout, l'ecarts aux bords.
-
       if j/= T_col'succ(TV_Virus'last(2)) then
         j := T_col'succ(j);
         if j/= T_col'succ(TV_Virus'last(2)) then
@@ -170,16 +174,26 @@ begin --InitGrid
       end if;
     end loop;
   end loop;
+for j in TV_Virus'range(2) loop
+  jpos:=T_col'pos(j)-64;
+  AjouterTexte(Fen,character'image(j)(2..2), character'image(j)(2..2), (jpos-1)*(cote+ecart)+X+cote/(ecart-2), Y-30, 20, 20);
+--TODO pour I !!
+end loop;
 end InitGrid;
 
 --------------------Pour fenêtre principale-------------------------------
 
-procedure BoutonF(v : in out TV_Virus; f : in out p_Piece_IO.file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre) is
+procedure BoutonF(v : in out TV_Virus;
+                  f : in out p_Piece_IO.file_type;
+                  Quitter : out boolean;
+                  coul : in out t_piece;
+                  win : in out TR_Fenetre;
+                  nbmove: out integer) is
 --{} => {}
   Dir: T_Direction;
 begin
   Quitter := false;
-
+  nbmove:=0;
     loop
     blockBouton:
       declare
@@ -192,71 +206,90 @@ begin
           Quitter := true;
         elsif bouton = "BoutonTuto" then
           LancerRegleJeu(f);
-        elsif Bouton = "hd" and coul/=vide and coul/=blanc then
+        elsif bouton = "BoutonAnnuler" then
+          if nbmove>0 then
+            nbmove:=nbmove-1;
+          --else
+
+            --TODO MSG à mettre pour signaler que ce n'est pas possible
+          end if;
+        elsif Bouton = "hd" and (coul/=vide or coul/=blanc) then
           Dir := hd;
           if possible(v,coul, Dir) then
             Deplacement(v,coul, Dir);
+            nbmove:=nbmove+1;
           end if;
-        elsif Bouton = "hg" and coul/=vide and coul/=blanc then
+        elsif Bouton = "hg" and (coul/=vide or coul/=blanc) then
           Dir := hg;
           if possible(v,coul, Dir) then
             Deplacement(v,coul, Dir);
+            nbmove:=nbmove+1;
           end if;
-        elsif Bouton = "bd" and coul/=vide and coul/=blanc then
+        elsif Bouton = "bd" and (coul/=vide or coul/=blanc) then
           Dir := bd;
           if possible(v,coul, Dir) then
             Deplacement(v,coul, Dir);
+            nbmove:=nbmove+1;
           end if;
-        elsif Bouton = "bg" and coul/=vide and coul/=blanc  then
+        elsif Bouton = "bg" and (coul/=vide or coul/=blanc)  then
           Dir := bg;
           if possible(v,coul, Dir) then
             Deplacement(v,coul, Dir);
+            nbmove:=nbmove+1;
           end if;
         else
           coul := v(integer'value(bouton(1..1)),bouton(2));
           ecrire(t_piece'image(coul));
         end if;
     end blockBouton;
-    exit when Gueri(v);
+    exit when Gueri(v) or quitter;
     MajAffichage(v,win);
   end loop;
 end boutonF;
 --------------------ouvrir fenêtre principale-------------------------------
-procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean) is --todo et ne pas oublier de detecter la fin
+procedure LancerJeu(v: in out tv_virus;
+                    f : in out p_Piece_IO.file_type;
+                    quitter : out boolean;
+                    nbmove: out integer) is --TODO et ne pas oublier de detecter la fin
 --{} => {a affiché la fenetre de jeu}
 -->> TODO nbcoup-------------------------------------------------
 FJeu : TR_Fenetre;
-hauteur, x, y, cote, ecart : natural;
+hauteur, x, y, cote, ecart, boutonXY : natural;
 coul : t_piece:= vide;
 begin
   x := 50;
-  y := 40;
-  cote:= 30;
+  y := 50;
+  cote:= 50;
   ecart:= 5;
   hauteur := 25;
+  boutonXY:=35;
 
   InitialiserFenetres;
   Fjeu:=DebutFenetre("AntiVirus",800,700);
-  AjouterBouton(Fjeu,"hg","hg",500,400,50,50);
-  AjouterBouton(Fjeu,"hd","hd",560,400,50,50);
-  AjouterBouton(Fjeu,"bg","bg",500,460,50,50);
-  AjouterBouton(Fjeu,"bd","bd",560,460,50,50);
-  AjouterBouton(Fjeu,"bg","bg",500,460,50,50);
-  AjouterBouton(Fjeu,"bd","bd",560,460,50,50);
+  AjouterBoutonImage(Fjeu,"hg","",500,400,boutonXY,boutonXY);
+  AjouterBoutonImage(Fjeu,"hd","",540,400,boutonXY,boutonXY);
+  AjouterBoutonImage(Fjeu,"bg","",500,440,boutonXY,boutonXY);
+  AjouterBoutonImage(Fjeu,"bd","",540,440,boutonXY,boutonXY);
 
-  AjouterBouton(Fjeu,"BoutonQuitter","BoutonQuitter",145,650,70,50);
-  AjouterBouton(Fjeu,"BoutonTuto","BoutonTuto",320,650,70,50);
+  ChangerImageBouton(Fjeu, "hg", "resources/arhg.xpm");
+  ChangerImageBouton(Fjeu, "hd", "resources/arhd.xpm");
+  ChangerImageBouton(Fjeu, "bg", "resources/arbg.xpm");
+  ChangerImageBouton(Fjeu, "bd", "resources/arbd.xpm");
+
+  AjouterBouton(Fjeu,"BoutonQuitter","Quitter",145,650,70,50);
+  AjouterBouton(Fjeu,"BoutonTuto","Regles",320,650,70,50);
 
 
 
 
-  AjouterTexte(Fjeu,"A", "A", 58, hauteur, 20, 20);
-  AjouterTexte(Fjeu,"B", "B", 93, hauteur, 20, 20);
-  AjouterTexte(Fjeu,"C", "C", 128, hauteur, 20, 20);
-  AjouterTexte(Fjeu,"D", "D", 162, hauteur, 20, 20);
-  AjouterTexte(Fjeu,"E", "E", 196, hauteur, 20, 20);
-  AjouterTexte(Fjeu,"F", "F", 230, hauteur, 20, 20);
-  AjouterTexte(Fjeu,"G", "G", 264, hauteur, 20, 20);
+  --AjouterTexte(Fjeu,"A", "A", 58, hauteur, 20, 20);
+  --AjouterTexte(Fjeu,"B", "B", 93, hauteur, 20, 20);
+  --AjouterTexte(Fjeu,"C", "C", 128, hauteur, 20, 20);
+  --AjouterTexte(Fjeu,"D", "D", 162, hauteur, 20, 20);
+  --AjouterTexte(Fjeu,"E", "E", 196, hauteur, 20, 20);
+  --AjouterTexte(Fjeu,"F", "F", 230, hauteur, 20, 20);
+  --AjouterTexte(Fjeu,"G", "G", 264, hauteur, 20, 20);
+
   AjouterTexte(Fjeu,"1", "1", 20, 60, 20, 20);
   AjouterTexte(Fjeu,"2", "2", 20, 100, 20, 20);
   AjouterTexte(Fjeu,"3", "3", 20, 140, 20, 20);
@@ -264,15 +297,15 @@ begin
   AjouterTexte(Fjeu,"5", "5", 20, 220, 20, 20);
   AjouterTexte(Fjeu,"6", "6", 20, 260, 20, 20);
   AjouterTexte(Fjeu,"7", "7", 20, 300, 20, 20);
+
   InitGrid(FJeu, "", x, y, cote, ecart);
   FinFenetre(Fjeu);
   MontrerFenetre(Fjeu);
   MajAffichage(v, Fjeu);
 
 
-  ecrire("test1");
-  BoutonF(v, f,Quitter, coul, fjeu);
-  ecrire("test2");
+  BoutonF(v, f,Quitter, coul, fjeu, nbmove);
+  --TODO Faire le lien avec la fin
 
 end LancerJeu;
 
@@ -363,7 +396,7 @@ begin
   MontrerFenetre(FRegleJeu);
   MajAffichage(v, FRegleJeu);
 
-  Changertexte(FRegleJeu, "Info", "Vous pouvez deplacer la piece" & NewLine & "de couleur que vous voulez" & NewLine & "en cliquant dessus puis en " & NewLine & "utilisant les fleches");
+  Changertexte(FRegleJeu, "Info", "Vous pouvez deplacer le groupe" & NewLine & "de couleur que vous voulez" & NewLine & "en cliquant dessus puis en " & NewLine & "utilisant les fleches");
   Regle1Block(v, q);
 
   if not q then
@@ -413,7 +446,7 @@ begin
 
   FinFenetre(Fscore);
   MontrerFenetre(Fscore);
-  if  AttendreBouton(Fscore) then
+  if  AttendreBouton(Fscore)="" then
     ecrire("we did it!");
   end if;
 

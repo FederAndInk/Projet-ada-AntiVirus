@@ -10,9 +10,9 @@ with ada.directories; use ada.directories;
 
 procedure avgraphique is
   partieNum, nbcoup:integer;
-  v_grille : tv_virus;
+  stop:boolean;
   fconfinit:p_Piece_IO.file_type;
-  keepgoing : boolean;
+  v_grille : tv_virus;
   nom: string(1..2);
   f_score : p_score_IO.file_type;
   vscore : TR_score;
@@ -31,14 +31,15 @@ begin --avgraphique
   --fenetre nom...
   nom:="Ha";
 
-  LancerPartie(fconfinit, partieNum, keepgoing);
-  if keepgoing then
+  LancerPartie(fconfinit, partieNum, stop);
+  if not stop then
     InitVect(v_grille);
     CreeVectVirus(fConfInit,partieNum, v_grille);
     --AfficheGrille(v_grille);
-    LancerJeu(v_grille,fconfinit, keepgoing);
-
-    LancerFin(nbcoup, nom);
+    LancerJeu(v_grille,fconfinit, stop, nbcoup);
+    if not stop then
+      LancerFin(nbcoup, nom);
+    end if;
     --LancerRegleJeu; --test regle jeu
   end if;
 end avgraphique;
