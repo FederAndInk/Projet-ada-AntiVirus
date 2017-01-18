@@ -18,6 +18,7 @@ begin --avgraphique
   InitialiserFenetres;
   nbcoup:=1;
   --fenetre nom...
+  nom:="Ha";
 
   LancerPartie(fconfinit, partieNum, keepgoing);
   if keepgoing then
