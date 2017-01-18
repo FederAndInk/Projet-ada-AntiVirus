@@ -11,7 +11,7 @@ package p_vuegraph is
 ----------------------Declarations
 
 --deux fenetres pour choisir la partie, puis jouer la partie.
-Fpartie, FJeu, FRegleJeu : TR_Fenetre;
+Fpartie, FJeu, FRegleJeu , Ffin: TR_Fenetre;
 NewLine : constant Character := Character'Val (10);
 
 
@@ -19,6 +19,12 @@ NewLine : constant Character := Character'Val (10);
 
 procedure LancerPartie(f : in out file_type; partie:out integer; continuer : out boolean);
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
+
+procedure LancerFin(nbcoup : in integer; nom : in string);
+--{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
+
+--procedure LancerScores(f: in out file_type);
+----{} => {}
 
 procedure InitGrid(Fen : in out TR_Fenetre; name : in string; X, Y, cote, ecart:in natural);
 --{} => {a generer la grille de bouton sur la fenetre Fen, avec les attributs des boutons}

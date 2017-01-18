@@ -11,7 +11,7 @@ begin --LancerPartie
   Fpartie:=DebutFenetre("Selection de la partie",700,700);
   AjouterBouton(Fpartie,"BoutonCommencer","Commencer !",225,650,70,50);
   AjouterBouton(Fpartie,"BoutonQuitter","Quitter",400,650,70,50); --(margeG, margeH, boutonL, boutonH)
-  AjouterBouton(Fpartie,"BoutonTuto","Regles",325,650,70,50);
+  AjouterBouton(Fpartie,"BoutonTuto","Regles",313,650,70,50);
 
   AjouterTexte(Fpartie, "Info", "", 260, 20, 160, 20);
 
@@ -72,8 +72,25 @@ begin --LancerPartie
 
 end LancerPartie;
 
-------------------------------------------------------
+--------------------------Fin de la fenetre de lancement----------------------------
 
+--------------------------Fenetre de fin-----------------------------------
+procedure LancerFin(nbcoup : in integer; nom : in string) is
+--{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
+begin
+  Ffin:=DebutFenetre("Fin de partie",500,200);
+  AjouterBouton(Ffin,"BoutonPrecedent","Niveau precedent",225,150,70,50);
+  AjouterBouton(Ffin,"BoutonPrecedent","Niveau Suivant",500,150,70,50);
+  AjouterBouton(Ffin,"BoutonQuitter","Quitter",400,650,70,50); --(margeG, margeH, boutonL, boutonH)
+  AjouterBouton(Ffin,"BoutonRecommencer","Refaire le niveau",313,650,70,50);
+
+  AjouterTexte(Ffin, "Info", "", 260, 20, 160, 20);
+  FinFenetre(Ffin);
+
+  MontrerFenetre(Ffin);
+end LancerFin;
+
+----------------------------------------------------------------------------------
 function convertPiece(piece : in t_piece) return T_Couleur is
 --{} => {renvoit la couleur T_Couleur correspondante à la couleur de t_piece}
 
