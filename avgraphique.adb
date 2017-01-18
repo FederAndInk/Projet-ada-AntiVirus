@@ -26,17 +26,15 @@ begin --avgraphique
   end if;
   p_Piece_IO.open(fconfinit , in_file, "Parties");
   InitialiserFenetres;
-  LancerScores(f_score);
+  --LancerScores(f_score);
   nbcoup:=1;
   --fenetre nom...
   nom:="Ha";
 
   LancerPartie(fconfinit, partieNum, stop);
   if not stop then
-    InitVect(v_grille);
-    CreeVectVirus(fConfInit,partieNum, v_grille);
     --AfficheGrille(v_grille);
-    LancerJeu(v_grille,fconfinit, stop, nbcoup);
+    LancerJeu(v_grille,fconfinit, stop, nbcoup, partieNum);
     if not stop then
       LancerFin(nbcoup, nom);
     end if;
