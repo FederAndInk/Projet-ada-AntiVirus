@@ -23,7 +23,6 @@ begin --avgraphique
 
   LancerPartie(fconfinit, partieNum, stop);
   if not stop then
-    --AfficheGrille(v_grille);
     LancerJeu(v_grille,fconfinit, stop, partieNum);
   end if;
 end avgraphique;
