@@ -1,6 +1,8 @@
 with p_fenbase ; use p_fenbase ;
 with Forms ; use Forms;
 with p_esiut; use p_esiut;
+with text_io; use text_io;
+
 with ada.calendar; use ada.calendar;
 with p_virus; use p_virus;
 with sequential_IO; use p_virus.p_Piece_IO;
@@ -35,7 +37,7 @@ type TV_Coups is array (0..256) of TV_Virus;
 procedure LancerPartie(f : in out p_Piece_IO.file_type; partie:out integer; Quitter : out boolean);
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
 
-procedure LancerFin(nbcoup : in integer; nom : in string);
+procedure LancerFin(nbcoup : in integer; nom : in string; temps : in natural);
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
 
 procedure LancerScores(f: in out p_score_IO.file_type);
@@ -56,6 +58,8 @@ procedure Regle2Block(v:in out TV_Virus; quitter: out Boolean);
 procedure LancerRegleJeu(f:in out p_Piece_IO.file_type);
 --{} => {a afficher les regles du jeu dans une fenetre}
 
+procedure afficheLog(f: in out text_io.file_type; win : in out TR_Fenetre);
+--{} => {}
 
 procedure BoutonF(v : in out TV_Virus;
                   f : in out p_Piece_IO.file_type;
@@ -63,10 +67,11 @@ procedure BoutonF(v : in out TV_Virus;
                   coul : in out t_piece;
                   win : in out TR_Fenetre;
                   nbmove: out integer;
-                  partieNum: in integer);
+                  partieNum: in integer;
+                  temps: out natural);
 --{} => {}
 
-procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean; nbmove: out integer; partieNum : in integer);
+procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean; nbmove: out integer; temps : out natural; partieNum : in integer);
 --{} => {a affiché la fenetre de jeu}
 
 

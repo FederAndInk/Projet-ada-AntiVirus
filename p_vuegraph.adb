@@ -76,7 +76,7 @@ end LancerPartie;
 --------------------------Fin de la fenetre de lancement----------------------------
 
 --------------------------Fenetre de fin-----------------------------------
-procedure LancerFin(nbcoup : in integer; nom : in string) is
+procedure LancerFin(nbcoup : in integer; nom : in string; temps : in natural) is
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
 begin
   Ffin:=DebutFenetre("Fin de partie",500,200);
@@ -90,6 +90,8 @@ begin
 
   MontrerFenetre(Ffin);
 end LancerFin;
+
+---------------------------------------------------------------------------
 
 function convertPiece(piece : in t_piece) return T_Couleur is
 --{} => {renvoit la couleur T_Couleur correspondante à la couleur de t_piece}
@@ -111,7 +113,7 @@ begin --convertPiece
 end convertPiece;
 
 
-------------------------------------------------------
+-----------------------Graphique-------------------------------
 
 
 procedure MajAffichage(v : in TV_Virus; Fen : in out TR_Fenetre) is
@@ -184,6 +186,39 @@ for i in TV_Virus'range(1) loop
 end loop;
 end InitGrid;
 
+
+------------------------Fichier log------------------------------------
+procedure afficheLog(f: in out text_io.file_type; win : in out TR_Fenetre) is
+--{} => {}
+  slog : string(1..1000);
+  s:string(1..40);
+  lg, lgtot, debs:integer;
+begin --log
+  reset(f, in_file);
+  lgtot:=1;
+  if not end_of_file(f) then
+    get_line(f, s, lg);
+    slog(1..lg+1):=s(1..lg) & NewLine;
+    lgtot:=lgtot+lg;
+  end if;
+  while not end_of_file(f) and lgtot<=(1000-lg) loop
+    get_line(f, s, lg);
+    debs:=lgtot+1;
+    lgtot:=lgtot+lg;
+    ecrire_ligne(debs);
+    ecrire_ligne(lgtot);
+    ecrire_ligne(lg);
+    slog(debs..lgtot):=s(1..lg);
+    lgtot:=lgtot+1;
+    slog(lgtot):=NewLine;
+  end loop;
+  ecrire_ligne(slog);
+  ChangerContenu(win, "Info", slog(1..lgtot));
+  reset(f, append_file);
+end AfficheLog;
+
+
+
 --------------------Pour fenêtre principale-------------------------------
 
 procedure BoutonF(v : in out TV_Virus;
@@ -192,21 +227,27 @@ procedure BoutonF(v : in out TV_Virus;
                   coul : in out t_piece;
                   win : in out TR_Fenetre;
                   nbmove: out integer;
-                  partieNum: in integer) is
+                  partieNum: in integer;
+                  temps : out natural) is
 --{} => {}
   Dir: T_Direction;
   vcoup:TV_Coups;
+  tempsDeb, tempsFin : time;
+  flog:text_io.file_type;
 begin
   Quitter := false;
   nbmove:=0;
   vcoup(nbmove):=v;
   nbmove:=1;
+  tempsDeb:=clock;
+  create(flog, out_file,"Partie.log");
+
     loop
     blockBouton:
       declare
         bouton : String := (AttendreBouton(win));
       begin
-        ecrire("test3");
+        --ecrire(Hist);
         ecrire_ligne(bouton);
         if bouton = "BoutonQuitter" then
           CacherFenetre(win);
@@ -216,11 +257,13 @@ begin
         elsif bouton = "BoutonAnnuler" then
           if nbmove>1 then
             nbmove:=nbmove-1;
-            ChangerContenu(win, "Info", "Deplacement" & integer'image(nbmove) & " annule");
+            --ChangerContenu(win, "Info", "Deplacement" & integer'image(nbmove) & " annule");
+            put(flog, "Deplacement" & integer'image(nbmove) & " annule");
+            afficheLog(flog, win);
             InitVect(v);
             v:=vcoup(nbmove-1);
           else
-            ChangerContenu(win, "Info", ConsulterContenu(win, "Info") & NewLine & "Impossible de revenir en arriere");
+            ChangerContenu(win, "Info",  "Impossible de revenir en arriere");
           end if;
         elsif bouton = "BoutonReInit" then
           nbmove:=0;
@@ -269,23 +312,27 @@ begin
           end if;
         else
           coul := v(integer'value(bouton(1..1)),bouton(2));
-          ChangerContenu(win, "Info", ConsulterContenu(win, "Info") & NewLine & "Selection de la piece de couleur " & t_piece'image(coul));
+          ChangerContenu(win, "Info", "Selection de la piece de couleur " & t_piece'image(coul));
         end if;
     end blockBouton;
     MajAffichage(v,win);
     exit when Gueri(v) or quitter;
   end loop;
+  tempsFin:=clock;
+  temps:=natural(tempsFin-tempsDeb);
 end boutonF;
 --------------------ouvrir fenêtre principale-------------------------------
 procedure LancerJeu(v: in out tv_virus;
                     f : in out p_Piece_IO.file_type;
                     quitter : out boolean;
-                    nbmove: out integer;
+                    nbmove : out integer;
+                    temps : out natural;
                     partieNum : in integer) is
 --{} => {a affiché la fenetre de jeu}
 FJeu : TR_Fenetre;
 hauteur, x, y, cote, ecart, boutonX, boutonY : natural;
 coul : t_piece:= vide;
+flog:text_io.file_type;
 begin
   x := 50;
   y := 50;
@@ -294,6 +341,7 @@ begin
   hauteur := 25;
   boutonX:=30;
   boutonY:=27;
+  -------------------------dessin fenetre---------
   InitialiserFenetres;
   Fjeu:=DebutFenetre("AntiVirus Niveau : " & integer'image(partieNum) ,800,700);
   AjouterBoutonImage(Fjeu,"hg","",490,367,boutonX,boutonY);
@@ -306,6 +354,7 @@ begin
   ChangerImageBouton(Fjeu, "bg", "resources/arbg.xpm");
   ChangerImageBouton(Fjeu, "bd", "resources/arbd.xpm");
 
+  AjouterBouton(Fjeu,"BoutonMenu", "Menu", 120,640,70,50);
   AjouterBouton(Fjeu,"BoutonQuitter","Quitter",50,640,70,50);
   AjouterBouton(Fjeu,"BoutonAnnuler","Annuler",242,450,70,50);
   AjouterBouton(Fjeu,"BoutonReInit","Recommencer",165,450,70,50);
@@ -313,23 +362,23 @@ begin
 
   AjouterTexteAscenseur(Fjeu, "Info", "Historique","", 500, 45, 270, 270);
 
+  AjouterHorloge(Fjeu, "clock", "",600 ,550 ,150, 150);
+
   InitGrid(FJeu, "", x, y, cote, ecart);
   FinFenetre(Fjeu);
-
+  -------------------------fin dessin fenetre---------
   ChangerContenu(FJeu, "Info", "Debut du niveau " & integer'image(partieNum));
-
   InitVect(v);
   CreeVectVirus(f,partieNum, v);
   MontrerFenetre(Fjeu);
   MajAffichage(v, Fjeu);
-
-  BoutonF(v, f,Quitter, coul, fjeu, nbmove, partieNum);
+  BoutonF(v, f,Quitter, coul, fjeu, nbmove, partieNum, temps);
   --TODO Faire le lien avec la fin
 
 end LancerJeu;
 
 
-
+----------------------Fin fenetre principale----------------------------------
 ---------------------Pour tuto---------------------------------
 
 procedure Regle1Block(v : in out TV_Virus; quitter: out Boolean) is

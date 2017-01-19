@@ -16,6 +16,7 @@ procedure avgraphique is
   nom: string(1..2);
   f_score : p_score_IO.file_type;
   vscore : TR_score;
+  temps:natural;
 begin --avgraphique
 
   if not exists("f_score.dat") then
@@ -34,9 +35,9 @@ begin --avgraphique
   LancerPartie(fconfinit, partieNum, stop);
   if not stop then
     --AfficheGrille(v_grille);
-    LancerJeu(v_grille,fconfinit, stop, nbcoup, partieNum);
+    LancerJeu(v_grille,fconfinit, stop, nbcoup, temps, partieNum);
     if not stop then
-      LancerFin(nbcoup, nom);
+      LancerFin(nbcoup, nom, temps);
     end if;
     --LancerRegleJeu; --test regle jeu
   end if;
