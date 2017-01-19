@@ -250,10 +250,12 @@ begin
     MajAffichage(v,win);
   end loop;
 
-  ----------------------fin de la partie traitement du score---------------------------
+  ----------------------fin de la partie / traitement du score---------------------------
   tempsfin := clock;
   temps := natural(tempsfin - tempsdebut);
   trscore.score := calcscore(nbmove, temps);
+  trscore.niveau :=4; --TODO changer niveau
+
   ecrire_ligne(trscore.score);
   ---enregistrement dans le ficher
   if not exists("f_score.dat") then
@@ -265,6 +267,10 @@ begin
   write(fscore, trscore);
   close(fscore);
 end boutonF;
+
+
+
+
 
 --------------------ouvrir fenêtre principale-------------------------------
 procedure LancerJeu(v: in out tv_virus;
@@ -278,6 +284,7 @@ coul : t_piece:= vide;
 begin
   x := 50;
   y := 50;
+  v(i).niveau;
   cote:= 50;
   ecart:= 5;
   hauteur := 25;
@@ -482,9 +489,21 @@ end loop;
 reset(f, in_file);
 end fichversVect;
 
---procedure Afficher(f:in out p_score_IO.file_type) is
----- {} => {}
 
+
+procedure Afficherscore(v : in Tv_score; Fen : in out TR_Fenetre; nomtxtasc : string) is
+------ {} => {}
+grosstring : string(1..10000);
+petitstring : string(1..100);
+begin
+  for i in v'range loop
+    petitstring := (v(i).nom & '|' & integer'image(v(i).score) & '|' & integer'image(v(i).niveau) & '|' & integer'image(Day(v(i).date)) & '/' & integer'image(Month(v(i).date)) & '/' & integer'image(Year(v(i).date)) & NewLine);
+
+    grosstring(1..petitstring'last) := petitstring ;
+    trscore.nom(petitstring'last+1..100):= (others => petitstring);
+    --grosstring()
+  end loop;
+end Afficherscore;
 
 
 procedure LancerScores(fen : in out TR_Fenetre; trscore : in out TR_score) is
@@ -494,9 +513,11 @@ vertic : natural;
 begin
   vertic := 50;
   InitialiserFenetres;
-  fen:= DebutFenetre("SCORE",400,600);--TODO Affichage texte ascenseur pause tant que les tris ne sont pas prêt
+  fen:= DebutFenetre("SCORE",400,500);
   Ajouterchamp(fen, "saisienom","Saisir votre nom", "", 150, vertic, 100, 30);
   AjouterBouton(fen,"Bsaisienom","valider",300,vertic-10,50,50);
+  AjouterTexteAscenseur(fen, "txtasc","","",50, vertic+50, 300, 400);
+
   FinFenetre(fen);
   MontrerFenetre(fen);
 

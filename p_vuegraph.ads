@@ -41,10 +41,10 @@ function calcscore(nbcoup, temps: in natural) return natural;
 function nbElem(f : in p_score_IO.file_type) return natural;
 ----{} => {}
 
---procedure getscore(tr_s : in TR_score; f:in out p_score_IO.file_type);
+procedure Afficherscore(v : in Tv_score; Fen : in out TR_Fenetre; nomtxtasc : string);
 ---- {} => {}
 
-procedure LancerScores(fen : in out TR_Fenetre; trscore : in out TR_score);
+procedure LancerScores(fen : in out TR_Fenetre;  trscore : in out TR_score);
 ----{} => {}
 
 procedure InitGrid(Fen : in out TR_Fenetre; name : in string; X, Y, cote, ecart:in natural);
@@ -87,15 +87,5 @@ procedure LancerJeu(v: in out tv_virus;
                     f : in out p_Piece_IO.file_type;
                     quitter : out boolean);
 --{} => {a affiché la fenetre de jeu}
-
---procedure triVect(f:in out p_Piece_IO.file_type; Vscore : in out TR_score);
---{} => {}
-
---procedure score(...);
-----{} => {a afficher les scores avec le nombre de coups et le temps passé}
-
-
-
-
 
 end p_vuegraph;
