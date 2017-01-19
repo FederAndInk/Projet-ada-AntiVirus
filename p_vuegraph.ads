@@ -37,7 +37,7 @@ type TV_Coups is array (0..256) of TV_Virus;
 procedure LancerPartie(f : in out p_Piece_IO.file_type; partie:out integer; Quitter : out boolean);
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
 
-procedure LancerFin(nbcoup : in integer; nom : in string; temps : in natural);
+procedure LancerFin(nbcoup : in natural; nom : in string; temps : in natural; win : in out TR_Fenetre);
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
 
 procedure LancerScores(f: in out p_score_IO.file_type);

@@ -18,7 +18,6 @@ procedure avgraphique is
   vscore : TR_score;
   temps:natural;
 begin --avgraphique
-
   if not exists("f_score.dat") then
     ecrire_ligne("création du fichier...");
     p_score_IO.create(f_score, out_file, "f_score.dat");
@@ -27,17 +26,15 @@ begin --avgraphique
   end if;
   p_Piece_IO.open(fconfinit , in_file, "Parties");
   InitialiserFenetres;
-  --LancerScores(f_score);
-  nbcoup:=1;
-  --fenetre nom...
+  --LancerScores(f_score); --TODO Lancer scores !
+  nbcoup:=2;
+  temps:=2;
   nom:="Ha";
-
   LancerPartie(fconfinit, partieNum, stop);
   if not stop then
     --AfficheGrille(v_grille);
     LancerJeu(v_grille,fconfinit, stop, nbcoup, temps, partieNum);
     if not stop then
-      LancerFin(nbcoup, nom, temps);
     end if;
     --LancerRegleJeu; --test regle jeu
   end if;
