@@ -76,7 +76,7 @@ end LancerPartie;
 --------------------------Fin de la fenetre de lancement----------------------------
 
 --------------------------Fenetre de fin-----------------------------------
-procedure LancerFin(nbcoup : in natural; nom : in string; temps : in natural; win : in out TR_Fenetre) is --TEMP add the tr here
+procedure LancerFin(nbcoup, temps : in natural; win : in out TR_Fenetre) is
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
 begin
   Ffin:=DebutFenetre("Fin de partie",500,200);
@@ -85,8 +85,9 @@ begin
   AjouterBouton(Ffin, "BoutonNiveau", "Niveaux", 255,170,70,50);
   AjouterBouton(Ffin,"BoutonQuitter","Quitter",180,170,70,50); --(margeG, margeH, boutonL, boutonH)
   AjouterBouton(Ffin,"BoutonRecommencer","Refaire" & NewLine & "le niveau",215,110,70,50);
-  AjouterTexte(Ffin, "Score", "2400000", 200, 65, 150, 60);
-  AjouterTexte(Ffin, "Info", "Bravo " & nom & ", vous avez fini en " & natural'image(temps) & " secondes et " & integer'image(nbcoup) & " votre est score est :", 20, 20, 480, 20);
+  AjouterTexte(Ffin, "Score", natural'image(User.score), 200, 40, 150, 60);
+  ecrire_ligne("Bravo " & User.nom & ", vous avez fini en " & natural'image(temps) & " secondes et " & integer'image(nbcoup) & " votre est score est :");
+  AjouterTexte(Ffin, "Info", "Bravo " & User.nom & ", vous avez fini en " & natural'image(temps) & " secondes et " & integer'image(nbcoup) & " votre est score est :", 20, 20, 480, 20);
   FinFenetre(Ffin);
   ChangerTailleTexte(Ffin, "Score", 48);
   MontrerFenetre(Ffin);
@@ -108,17 +109,19 @@ begin
     declare
       bouton:string:=Attendrebouton(Ffin);
     begin
-      if bouton="BoutonPrecedent" then
-        --TODO bouton 
-      elsif bouton="BoutonSuivant" then
-
-      elsif bouton="BoutonNiveau" then
-
-      elsif bouton="BoutonQuitter" then
-        CacherFenetre(Ffin);
-      elsif bouton="BoutonRecommencer" then
-      end if;
+      --if bouton="BoutonPrecedent" then
+      --  --TODO bouton
+      --elsif bouton="BoutonSuivant" then
+      --
+      --elsif bouton="BoutonNiveau" then
+      --
+      --elsif bouton="BoutonQuitter" then
+      --  CacherFenetre(Ffin);
+      --elsif bouton="BoutonRecommencer" then
+      --end if;
       CacherFenetre(Ffin);
+      CacherFenetre(win);
+      abort cligno;
     end boutonC;
 
   end clignoScore;
@@ -238,14 +241,10 @@ begin --log
     get_line(f, s, lg);
     debs:=lgtot+1;
     lgtot:=lgtot+lg;
-    ecrire_ligne(debs);
-    ecrire_ligne(lgtot);
-    ecrire_ligne(lg);
     slog(debs..lgtot):=s(1..lg);
     lgtot:=lgtot+1;
     slog(lgtot):=NewLine;
   end loop;
-  ecrire_ligne(slog);
   ChangerContenu(win, "Info", slog(1..lgtot));
   reset(f, append_file);
 end AfficheLog;
@@ -258,12 +257,12 @@ procedure BoutonF(v : in out TV_Virus;
                   f : in out p_Piece_IO.file_type;
                   Quitter : out boolean;
                   coul : in out t_piece;
-                  win : in out TR_Fenetre) is
+                  win : in out TR_Fenetre;
+                  partieNum : in integer) is
 --{} => {}
   Dir: T_Direction;
   tempsdebut, tempsfin : time;
   nbmove, temps : natural;
-  trscore : tR_score;
   fscore : p_score_IO.file_type;
   vcoup:TV_Coups;
   flog:text_io.file_type;
@@ -273,8 +272,7 @@ begin
   Quitter := false;
   nbmove:=0;
   vcoup(nbmove):=v;
-  nbmove:=1;
-  tempsDeb:=clock;
+  --nbmove:=1;
   create(flog, out_file,"Partie.log");
   put(flog, "Debut du niveau " & integer'image(partieNum));
 
@@ -355,14 +353,21 @@ begin
     afficheLog(flog, win);
     exit when Gueri(v) or quitter;
   end loop;
+  close(flog);
+
 
   ----------------------fin de la partie / traitement du score---------------------------
   tempsfin := clock;
   temps := natural(tempsfin - tempsdebut);
-  trscore.score := calcscore(nbmove, temps);
-  trscore.niveau :=4; --TODO changer niveau
 
-  ecrire_ligne(trscore.score);
+  User.score := calcscore(nbmove, temps);
+  User.niveau :=partieNum;
+
+  User.date := clock;
+
+  ecrire_ligne(User.score);
+
+
   ---enregistrement dans le ficher
   if not exists("f_score.dat") then
     ecrire_ligne("création du fichier...");
@@ -370,12 +375,14 @@ begin
   else
     p_score_IO.open(fscore, p_score_IO.append_file, "f_score.dat");
   end if;
-  write(fscore, trscore);
+  write(fscore, User);
   close(fscore);
-
-  LancerFin(nbcoup, nom, temps);--TODO regarder ce que fait git + voir ou le mettre !!
+  if not quitter then
+    LancerFin(nbmove, temps, win);
+    quitter:=true;
+  end if;
 end boutonF;
-
+-------------------------------------Fin Partie--------------------------
 
 
 
@@ -383,7 +390,8 @@ end boutonF;
 --------------------ouvrir fenêtre principale-------------------------------
 procedure LancerJeu(v: in out tv_virus;
                     f : in out p_Piece_IO.file_type;
-                    quitter : out boolean) is --TODO et ne pas oublier de detecter la fin
+                    quitter : out boolean;
+                    partieNum : in integer) is
 
 --{} => {a affiché la fenetre de jeu}
 FJeu : TR_Fenetre;
@@ -393,7 +401,6 @@ flog:text_io.file_type;
 begin
   x := 50;
   y := 50;
-  v(i).niveau;
   cote:= 50;
   ecart:= 5;
   hauteur := 25;
@@ -431,9 +438,7 @@ begin
   MontrerFenetre(Fjeu);
   MajAffichage(v, Fjeu);
 
-  BoutonF(v, f,Quitter, coul, fjeu);
-
-  --TODO Faire le lien avec la fin
+  BoutonF(v, f,Quitter, coul, fjeu, partieNum);
 
 end LancerJeu;
 
@@ -572,72 +577,116 @@ function nbElem(f : in p_score_IO.file_type) return natural is
   nbelem : natural;
   i : TR_score;
 begin
-  nbelem := 1;
-while not end_of_file(f) loop
-  read(f,i);
-  nbelem := nbelem+1;
-end loop;
-return nbelem;
+  nbelem := 0;
+  while not end_of_file(f) loop
+    read(f,i);
+    nbelem := nbelem+1;
+  end loop;
+  return nbelem;
 end nbElem;
 
-procedure fichversVect(f : in out p_score_IO.file_type; v : out Tv_score) is
-i : integer;
+procedure fichversVect(f : in out p_score_IO.file_type; v : in out Tv_score) is
+  i : integer;
 begin
+    reset(f, in_file);
+    i := v'first;
+  while not end_of_file(f) loop
+    read(f,v(i));
+    i := i+1;
+  end loop;
   reset(f, in_file);
-  i := 0;
-while not end_of_file(f) loop
-  read(f,v(i));
-  i := i+1;
-end loop;
-reset(f, in_file);
 end fichversVect;
 
 
 
-procedure Afficherscore(v : in Tv_score; Fen : in out TR_Fenetre; nomtxtasc : string) is
+procedure Afficherscore(v : in Tv_score; Fen : in out TR_Fenetre) is
 ------ {} => {}
-grosstring : string(1..10000);
-petitstring : string(1..100);
+  grosstring : string(1..10000);
+  lgtot, debs, lg : integer;
+  i:integer:=V'first;
+  present : string :="   Nom    |  Score  |niveau|    Date    " & NewLine;
 begin
-  for i in v'range loop
-    petitstring := (v(i).nom & '|' & integer'image(v(i).score) & '|' & integer'image(v(i).niveau) & '|' & integer'image(Day(v(i).date)) & '/' & integer'image(Month(v(i).date)) & '/' & integer'image(Year(v(i).date)) & NewLine);
 
-    grosstring(1..petitstring'last) := petitstring ;
-    trscore.nom(petitstring'last+1..100):= (others => petitstring);
-    --grosstring()
-  end loop;
+  lgtot:=Present'last;
+  grosstring(1..Present'last):=Present;
+  lg:=0;
+    while i<=v'last and lgtot<=(10000-lg) loop
+      stringDyn:
+      declare
+        strInter : string:= (v(i).nom & '|' & integer'image(v(i).score) & "|    " & integer'image(v(i).niveau) & '|' & integer'image(Day(v(i).date)) & '/' & integer'image(Month(v(i).date)) & '/' & integer'image(Year(v(i).date)));
+      begin
+        ecrire_ligne(i);
+        --if not end_of_file(f) then
+        --  grosstring(1..lg+1):=s(1..lg) & NewLine;
+        --  lgtot:=lgtot+lg;
+        --end if;
+        lg:=strInter'last;
+        --get_line(f, s, lg);
+        debs:=lgtot+1;
+        lgtot:=lgtot+lg;
+        grosstring(debs..lgtot):=strInter(strInter'First..lg);
+        lgtot:=lgtot+1;
+        grosstring(lgtot):=NewLine;
+        i:=i+1;
+      end stringDyn;
+    end loop;
+      --grosstring((i-1)*strInter'last..(i*strInter'last)) := strInter;
+      ecrire(grosstring(1..lgtot-1));
+      ChangerContenu(Fen, "txtasc", grosstring(1..lgtot));
 end Afficherscore;
 
 
-procedure LancerScores(fen : in out TR_Fenetre; trscore : in out TR_score) is
+procedure LancerScores is
 ----{} => {}
 --Tsaisienom : string(1..15);
 vertic : natural;
+fscore : p_score_IO.file_type;
 begin
   vertic := 50;
   InitialiserFenetres;
-  fen:= DebutFenetre("SCORE",400,500);
-  Ajouterchamp(fen, "saisienom","Saisir votre nom", "", 150, vertic, 100, 30);
-  AjouterBouton(fen,"Bsaisienom","valider",300,vertic-10,50,50);
-  AjouterTexteAscenseur(fen, "txtasc","","",50, vertic+50, 300, 400);
+  Fenscore:= DebutFenetre("SCORE",400,500);
+  Ajouterchamp(Fenscore, "saisienom","Saisir votre nom", "", 150, vertic, 100, 30);
+  AjouterBouton(Fenscore,"Bsaisienom","valider",300,vertic-10,50,50);
+  AjouterTexteAscenseur(Fenscore, "txtasc","","",50, vertic+50, 300, 400);
 
-  FinFenetre(fen);
-  MontrerFenetre(fen);
+  FinFenetre(Fenscore);
+  MontrerFenetre(Fenscore);
+  if not exists("f_score.dat") then
+    ecrire_ligne("création du fichier...");
+    p_score_IO.create(fscore, out_file, "f_score.dat");
+    ChangerContenu(Fenscore, "txtasc", "Aucun score enregistrer");
+  else
+    p_score_IO.open(fscore, p_score_IO.in_file, "f_score.dat");
 
-  loop
-  declare
-    bouton: string:=AttendreBouton(fen);
-    nomsaisie : string := ConsulterContenu(fen,"saisienom");
+    VecteurScore:
+    declare
+      vscore:Tv_score(1..nbElem(fscore));
     begin
-    trscore.nom(1..nomsaisie'last) := nomsaisie ;
-    trscore.nom(nomsaisie'last+1..15):= (others => ' ');
-    trscore.date := clock;
-    ecrire("Salut, ");
-    ecrire(ConsulterContenu(fen,"saisienom")); ecrire_ligne("!");
-    ecrire("Nom enregistrer voyons votre niveau!");
-    exit when bouton="Bsaisienom";
+      fichversVect(fscore, vscore);
+      Afficherscore(vscore, Fenscore);
+    end VecteurScore;
+
+  end if;
+  close(fscore);
+  loop
+    declare
+      bouton: string:=AttendreBouton(Fenscore);
+      Nom: string :=ConsulterContenu(Fenscore,"saisienom");
+    begin
+      if nom'length>10 then
+        User.nom(1..10) := nom(1..10);
+      else
+        User.nom(1..nom'last) := nom;
+        User.nom(nom'last+1..10):= (others => ' '); -- fonctionne quand meme avec 10 caracteres pile !
+    end if;
+      ecrire("Salut, ");
+      ecrire(User.nom); ecrire_ligne("!");
+      ecrire("Nom enregistrer voyons votre niveau!");
+      exit when bouton="Bsaisienom";
     end;
   end loop;
+  CacherFenetre(Fenscore);
+
 
 end LancerScores;
 

@@ -14,18 +14,21 @@ package p_vuegraph is
 ----------------------Declarations
 
 type TR_score is record
-  nom : string(1..15);
+  nom : string(1..10);
   score : integer;
   niveau : natural;
   date : time;
 end record;
 
+User:TR_score;
 
 type tv_score is array (integer range <>) of TR_score;
 
 --deux fenetres pour choisir la partie, puis jouer la partie.
-Fpartie, FJeu, FRegleJeu , Ffin : TR_Fenetre;
+Fpartie, FJeu, FRegleJeu , Ffin, Fenscore : TR_Fenetre;
 NewLine : constant Character := Character'Val (10);
+
+E_choiceError : exception;
 
 package p_score_IO is new sequential_IO (TR_score); use p_score_IO;
 
@@ -36,7 +39,7 @@ type TV_Coups is array (0..256) of TV_Virus;
 procedure LancerPartie(f : in out p_Piece_IO.file_type; partie:out integer; Quitter : out boolean);
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
 
-procedure LancerFin(nbcoup : in natural; nom : in string; temps : in natural; win : in out TR_Fenetre);
+procedure LancerFin(nbcoup, temps : in natural; win : in out TR_Fenetre);
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
 
 function calcscore(nbcoup, temps: in natural) return natural;
@@ -45,10 +48,10 @@ function calcscore(nbcoup, temps: in natural) return natural;
 function nbElem(f : in p_score_IO.file_type) return natural;
 ----{} => {}
 
-procedure Afficherscore(v : in Tv_score; Fen : in out TR_Fenetre; nomtxtasc : string);
+procedure Afficherscore(v : in Tv_score; Fen : in out TR_Fenetre);
 ---- {} => {}
 
-procedure LancerScores(fen : in out TR_Fenetre;  trscore : in out TR_score);
+procedure LancerScores;
 ----{} => {}
 
 procedure InitGrid(Fen : in out TR_Fenetre; name : in string; X, Y, cote, ecart:in natural);
@@ -73,11 +76,9 @@ procedure BoutonF(v : in out TV_Virus;
                   f : in out p_Piece_IO.file_type;
                   Quitter : out boolean;
                   coul : in out t_piece;
-                  win : in out TR_Fenetre);
+                  win : in out TR_Fenetre;
+                  partieNum : in integer);
 --{} => {}
-
-procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean; nbmove: out integer; temps : out natural; partieNum : in integer);
---{} => {a affiché la fenetre de jeu} --TODO a supprimer ?
 
 
 procedure tribulle(v : in out tv_score; choix : in integer);
@@ -98,7 +99,8 @@ procedure permut(a,b : in out TR_score);
 
 procedure LancerJeu(v: in out tv_virus;
                     f : in out p_Piece_IO.file_type;
-                    quitter : out boolean);
+                    quitter : out boolean;
+                    partieNum : in integer);
 --{} => {a affiché la fenetre de jeu}
 
 end p_vuegraph;
