@@ -4,4 +4,6 @@ antivirus
 testGraph
 b~*
 avgraphique
-bcontrol
+bcontrol*
+*.log
+*.dat

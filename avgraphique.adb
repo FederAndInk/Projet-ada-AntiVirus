@@ -5,29 +5,24 @@ with p_esiut; use p_esiut;
 with ada.calendar; use ada.calendar;
 with p_virus; use p_virus;
 with text_io; use p_virus.p_Piece_IO;
-use p_virus.p_Direction_IO, p_virus.p_Pieceenum_IO;
+use p_virus.p_Direction_IO, p_virus.p_Pieceenum_IO, p_vuegraph.p_score_IO;
+with ada.directories; use ada.directories;
 
 procedure avgraphique is
-  partieNum, nbcoup:integer;
-  v_grille:tv_virus;
-  fconfinit:file_type;
-  keepgoing:boolean;
-  nom: string(1..2);
+  partieNum : integer;
+  stop : boolean;
+  fconfinit : p_Piece_IO.file_type;
+  v_grille : tv_virus;
 begin --avgraphique
-  open(fconfinit , in_file, "Parties");
+
+
+  p_Piece_IO.open(fconfinit , in_file, "Parties");
   InitialiserFenetres;
-  nbcoup:=1;
-  --fenetre nom...
-  nom:="Ha";
 
-  LancerPartie(fconfinit, partieNum, keepgoing);
-  if keepgoing then
-    InitVect(v_grille);
-    CreeVectVirus(fConfInit,partieNum, v_grille);
-    --AfficheGrille(v_grille);
-    LancerJeu(v_grille,fconfinit, keepgoing);
+  LancerScores;
 
-    LancerFin(nbcoup, nom);
-    --LancerRegleJeu; --test regle jeu
+  LancerPartie(fconfinit, partieNum, stop);
+  if not stop then
+    LancerJeu(v_grille,fconfinit, stop, partieNum);
   end if;
 end avgraphique;

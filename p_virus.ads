@@ -20,7 +20,6 @@ package p_virus is
 
 	---- Instanciation de sequential_IO pour le fichier de description de la grille
 	package p_Piece_IO is new sequential_IO (TR_Piece); use p_Piece_IO;
-
 	---- type pour le vecteur representant la grille
 	type TV_Virus is array (T_lig,T_col) of T_Piece;
 	---- type pour la direction des deplacements des pieces
