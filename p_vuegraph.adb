@@ -187,11 +187,15 @@ procedure BoutonF(v : in out TV_Virus;
                   f : in out p_Piece_IO.file_type;
                   Quitter : out boolean;
                   coul : in out t_piece;
-                  win : in out TR_Fenetre;
-                  nbmove: out integer) is
+                  win : in out TR_Fenetre) is
 --{} => {}
   Dir: T_Direction;
+  tempsdebut, tempsfin : time;
+  nbmove, temps : natural;
+  trscore : tR_score;
+  fscore : p_score_IO.file_type;
 begin
+  tempsdebut := clock;
   Quitter := false;
   nbmove:=0;
     loop
@@ -245,12 +249,27 @@ begin
     exit when Gueri(v) or quitter;
     MajAffichage(v,win);
   end loop;
+
+  ----------------------fin de la partie traitement du score---------------------------
+  tempsfin := clock;
+  temps := natural(tempsfin - tempsdebut);
+  trscore.score := calcscore(nbmove, temps);
+  ecrire_ligne(trscore.score);
+  ---enregistrement dans le ficher
+  if not exists("f_score.dat") then
+    ecrire_ligne("création du fichier...");
+    p_score_IO.create(fscore, out_file, "f_score.dat");
+  else
+    p_score_IO.open(fscore, p_score_IO.append_file, "f_score.dat");
+  end if;
+  write(fscore, trscore);
+  close(fscore);
 end boutonF;
+
 --------------------ouvrir fenêtre principale-------------------------------
 procedure LancerJeu(v: in out tv_virus;
                     f : in out p_Piece_IO.file_type;
-                    quitter : out boolean;
-                    nbmove: out integer) is --TODO et ne pas oublier de detecter la fin
+                    quitter : out boolean) is --TODO et ne pas oublier de detecter la fin
 --{} => {a affiché la fenetre de jeu}
 -->> TODO nbcoup-------------------------------------------------
 FJeu : TR_Fenetre;
@@ -288,8 +307,7 @@ begin
   --AjouterTexte(Fjeu,"D", "D", 162, hauteur, 20, 20);
   --AjouterTexte(Fjeu,"E", "E", 196, hauteur, 20, 20);
   --AjouterTexte(Fjeu,"F", "F", 230, hauteur, 20, 20);
-  --AjouterTexte(Fjeu,"G", "G", 264, hauteur, 20, 20);
-
+  --AjouterTexte(Fjeu,"G", "G",
   AjouterTexte(Fjeu,"1", "1", 20, 60, 20, 20);
   AjouterTexte(Fjeu,"2", "2", 20, 100, 20, 20);
   AjouterTexte(Fjeu,"3", "3", 20, 140, 20, 20);
@@ -304,7 +322,7 @@ begin
   MajAffichage(v, Fjeu);
 
 
-  BoutonF(v, f,Quitter, coul, fjeu, nbmove);
+  BoutonF(v, f,Quitter, coul, fjeu);
   --TODO Faire le lien avec la fin
 
 end LancerJeu;
@@ -432,36 +450,96 @@ end LancerRegleJeu;
 
 -----------------------------------------Partie score------------------------------------------------------
 
-
-procedure LancerScores(f: in out p_score_IO.file_type) is
-----{} => {}
+function calcscore(nbcoup, temps : in natural) return natural is
+----{nbcoup et temps} => {= resultat est le score}
 
 begin
-  Fscore:=DebutFenetre("SCORE",400,600);--TODO Affichage texte ascenseur pause tant que les tris ne sont pas prêt
+return natural(((1.0/float(nbcoup) + 1.0/float(temps)) * 150000000.0));
+end calcscore;
 
-  Ajouterchamp(Fscore, "saisienom","Saisir votre nom", "Moins de 15 caractère...", 500, 400, 50, 30);
-  AjouterBouton(Fscore,"boutonValdier","valider",500,400,50,50);
+function nbElem(f : in p_score_IO.file_type) return natural is
+----{f ouvert, f- = <>} => {}
+  nbelem : natural;
+  i : TR_score;
+begin
+  nbelem := 1;
+while not end_of_file(f) loop
+  read(f,i);
+  nbelem := nbelem+1;
+end loop;
+return nbelem;
+end nbElem;
+
+procedure fichversVect(f : in out p_score_IO.file_type; v : out Tv_score) is
+i : integer;
+begin
+  reset(f, in_file);
+  i := 0;
+while not end_of_file(f) loop
+  read(f,v(i));
+  i := i+1;
+end loop;
+reset(f, in_file);
+end fichversVect;
+
+--procedure Afficher(f:in out p_score_IO.file_type) is
+---- {} => {}
 
 
 
-  FinFenetre(Fscore);
-  MontrerFenetre(Fscore);
-  if  AttendreBouton(Fscore)="" then
-    ecrire("we did it!");
-  end if;
+procedure LancerScores(fen : in out TR_Fenetre; trscore : in out TR_score) is
+----{} => {}
+--Tsaisienom : string(1..15);
+vertic : natural;
+begin
+  vertic := 50;
+  InitialiserFenetres;
+  fen:= DebutFenetre("SCORE",400,600);--TODO Affichage texte ascenseur pause tant que les tris ne sont pas prêt
+  Ajouterchamp(fen, "saisienom","Saisir votre nom", "", 150, vertic, 100, 30);
+  AjouterBouton(fen,"Bsaisienom","valider",300,vertic-10,50,50);
+  FinFenetre(fen);
+  MontrerFenetre(fen);
+
+  loop
+  declare
+    bouton: string:=AttendreBouton(fen);
+    nomsaisie : string := ConsulterContenu(fen,"saisienom");
+    begin
+    trscore.nom(1..nomsaisie'last) := nomsaisie ;
+    trscore.nom(nomsaisie'last+1..15):= (others => ' ');
+    trscore.date := clock;
+    ecrire("Salut, ");
+    ecrire(ConsulterContenu(fen,"saisienom")); ecrire_ligne("!");
+    ecrire("Nom enregistrer voyons votre niveau!");
+    exit when bouton="Bsaisienom";
+    end;
+  end loop;
 
 end LancerScores;
 
 -----------------------------------------fin score------------------------------------------------------
 
 
-function infstrict(a,b : TR_score) return boolean is
+
+function infstrict(a,b : TR_score; choix : in integer) return boolean is
 --{} => {}
 begin
-  return (a.nom <b.nom) or (a.nom = b.nom and a.score<b.score);
+  if choix = 0 then
+    return (a.nom <b.nom) or (a.nom = b.nom and a.score<b.score);
+  elsif choix = 1 then
+    return (a.score <b.score) or (a.score = b.score and a.nom<b.nom);
+  elsif choix = 2 then
+    return (a.date <b.date) or (a.date = b.date and a.score<b.score);
+  elsif choix = 3 then
+    return (a.niveau < b.niveau) or (a.niveau = b.niveau and a.score<b.score);
+  else
+    raise E_choiceError;
+  end if;
+
+
 end infstrict;
 
-procedure permut(a,b : in out TR_score) is
+procedure permut(a,b : in out TR_score) is-- intervertis les deux éléments du vecteur pour les trier
 --{} => {}
 c : TR_score;
 begin
@@ -470,29 +548,17 @@ begin
   b := c;
 end permut;
 
-procedure trinom(v : in out tv_score) is
---{} => {}
+procedure tribulle(v : in out tv_score; choix : in integer) is -- 0=>nom/score -- 1=>score/nom -- 2=>date/score --3=>niveau/score
+--{v non trié} => {v trié suivant choix}
 begin
   for i in v'range loop
     for j in reverse i+1..v'last loop
-      if infstrict(v(i),v(j)) then
+      if infstrict(v(i),v(j),choix) then
         permut(v(i),v(j));
       end if;
     end loop;
   end loop;
-end trinom;
+end tribulle;
 
---procedure triscore
---procedure tridate
---procedure triniveau
-
---procedure triVect(f : in out p_Piece_IO.file_type; V : in out TR_score) is
-----{} => {}
---
---begin
---ecrire("bjr");
---
---
---end triVect;
 
 end p_vuegraph;

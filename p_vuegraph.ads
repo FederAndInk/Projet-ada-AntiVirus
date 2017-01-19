@@ -20,10 +20,12 @@ end record;
 type tv_score is array (integer range <>) of TR_score;
 
 --deux fenetres pour choisir la partie, puis jouer la partie.
-Fpartie, FJeu, FRegleJeu , Ffin, Fscore : TR_Fenetre;
+Fpartie, FJeu, FRegleJeu , Ffin : TR_Fenetre;
 NewLine : constant Character := Character'Val (10);
 
 package p_score_IO is new sequential_IO (TR_score); use p_score_IO;
+
+E_choiceError:exception;
 
 ---------------------Corps
 
@@ -33,7 +35,16 @@ procedure LancerPartie(f : in out p_Piece_IO.file_type; partie:out integer; Quit
 procedure LancerFin(nbcoup : in integer; nom : in string);
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
 
-procedure LancerScores(f: in out p_score_IO.file_type);
+function calcscore(nbcoup, temps: in natural) return natural;
+----{} => {}
+
+function nbElem(f : in p_score_IO.file_type) return natural;
+----{} => {}
+
+--procedure getscore(tr_s : in TR_score; f:in out p_score_IO.file_type);
+---- {} => {}
+
+procedure LancerScores(fen : in out TR_Fenetre; trscore : in out TR_score);
 ----{} => {}
 
 procedure InitGrid(Fen : in out TR_Fenetre; name : in string; X, Y, cote, ecart:in natural);
@@ -52,21 +63,29 @@ procedure LancerRegleJeu(f:in out p_Piece_IO.file_type);
 --{} => {a afficher les regles du jeu dans une fenetre}
 
 
-procedure BoutonF(v : in out TV_Virus; f : in out p_Piece_IO.file_type; Quitter : out boolean; coul : in out t_piece; win : in out TR_Fenetre; nbmove: out integer);
+procedure BoutonF(v : in out TV_Virus;
+                  f : in out p_Piece_IO.file_type;
+                  Quitter : out boolean;
+                  coul : in out t_piece;
+                  win : in out TR_Fenetre);
 --{} => {}
 
 
-procedure trinom(v : in out tv_score);
+procedure tribulle(v : in out tv_score; choix : in integer);
 --{} => {}
 
-function infstrict(a,b : TR_score) return boolean;
+
+
+
+function infstrict(a,b : TR_score; choix : in integer) return boolean;
 --{} => {}
 
 procedure permut(a,b : in out TR_score);
 --{} => {}
 
-procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean; nbmove: out integer);
-
+procedure LancerJeu(v: in out tv_virus;
+                    f : in out p_Piece_IO.file_type;
+                    quitter : out boolean);
 --{} => {a affiché la fenetre de jeu}
 
 --procedure triVect(f:in out p_Piece_IO.file_type; Vscore : in out TR_score);
