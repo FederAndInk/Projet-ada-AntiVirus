@@ -76,20 +76,55 @@ end LancerPartie;
 --------------------------Fin de la fenetre de lancement----------------------------
 
 --------------------------Fenetre de fin-----------------------------------
-procedure LancerFin(nbcoup : in integer; nom : in string) is
+procedure LancerFin(nbcoup : in natural; nom : in string; temps : in natural; win : in out TR_Fenetre) is --TEMP add the tr here
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
 begin
   Ffin:=DebutFenetre("Fin de partie",500,200);
-  AjouterBouton(Ffin,"BoutonPrecedent","Niveau precedent",225,150,70,50);
-  AjouterBouton(Ffin,"BoutonPrecedent","Niveau Suivant",500,150,70,50);
-  AjouterBouton(Ffin,"BoutonQuitter","Quitter",400,650,70,50); --(margeG, margeH, boutonL, boutonH)
-  AjouterBouton(Ffin,"BoutonRecommencer","Refaire le niveau",313,650,70,50);
-
-  AjouterTexte(Ffin, "Info", "", 260, 20, 160, 20);
+  AjouterBouton(Ffin,"BoutonPrecedent","Niveau" & NewLine & "precedent",290,110,70,50);
+  AjouterBouton(Ffin,"BoutonSuivant","Niveau" & NewLine & "Suivant",140,110,70,50);
+  AjouterBouton(Ffin, "BoutonNiveau", "Niveaux", 255,170,70,50);
+  AjouterBouton(Ffin,"BoutonQuitter","Quitter",180,170,70,50); --(margeG, margeH, boutonL, boutonH)
+  AjouterBouton(Ffin,"BoutonRecommencer","Refaire" & NewLine & "le niveau",215,110,70,50);
+  AjouterTexte(Ffin, "Score", "2400000", 200, 65, 150, 60);
+  AjouterTexte(Ffin, "Info", "Bravo " & nom & ", vous avez fini en " & natural'image(temps) & " secondes et " & integer'image(nbcoup) & " votre est score est :", 20, 20, 480, 20);
   FinFenetre(Ffin);
-
+  ChangerTailleTexte(Ffin, "Score", 48);
   MontrerFenetre(Ffin);
+
+  clignoScore:
+  declare
+    task cligno;
+    task body cligno is
+    begin
+      while true loop --TODO trouver une autre condition
+        for i in FL_COLOR loop
+          ChangerCouleurTexte(Ffin, "Score", i);
+          delay 0.2;
+        end loop;
+      end loop;
+    end cligno;
+  begin
+    boutonC:
+    declare
+      bouton:string:=Attendrebouton(Ffin);
+    begin
+      if bouton="BoutonPrecedent" then
+        --TODO bouton 
+      elsif bouton="BoutonSuivant" then
+
+      elsif bouton="BoutonNiveau" then
+
+      elsif bouton="BoutonQuitter" then
+        CacherFenetre(Ffin);
+      elsif bouton="BoutonRecommencer" then
+      end if;
+      CacherFenetre(Ffin);
+    end boutonC;
+
+  end clignoScore;
 end LancerFin;
+
+---------------------------------------------------------------------------
 
 function convertPiece(piece : in t_piece) return T_Couleur is
 --{} => {renvoit la couleur T_Couleur correspondante à la couleur de t_piece}
@@ -111,7 +146,7 @@ begin --convertPiece
 end convertPiece;
 
 
-------------------------------------------------------
+-----------------------Graphique-------------------------------
 
 
 procedure MajAffichage(v : in TV_Virus; Fen : in out TR_Fenetre) is
@@ -176,10 +211,46 @@ begin --InitGrid
   end loop;
 for j in TV_Virus'range(2) loop
   jpos:=T_col'pos(j)-64;
-  AjouterTexte(Fen,character'image(j)(2..2), character'image(j)(2..2), (jpos-1)*(cote+ecart)+X+cote/(ecart-2), Y-30, 20, 20);
---TODO pour I !!
+  AjouterTexte(Fen,character'image(j)(2..2), character'image(j)(2..2), (jpos-1)*(cote+ecart)+X+cote/(ecart-ecart/2), Y-30, 20, 20);
+end loop;
+for i in TV_Virus'range(1) loop
+  AjouterTexte(Fen,integer'image(i)(2..2), integer'image(i)(2..2), X-20,(i-1)*(cote+ecart)+Y+cote/(ecart-ecart/2), 20, 20);
+  ecrire_ligne(cote+ecart+40);
 end loop;
 end InitGrid;
+
+
+------------------------Fichier log------------------------------------
+procedure afficheLog(f: in out text_io.file_type; win : in out TR_Fenetre) is
+--{} => {}
+  slog : string(1..1000);
+  s:string(1..40);
+  lg, lgtot, debs:integer;
+begin --log
+  reset(f, in_file);
+  lgtot:=1;
+  if not end_of_file(f) then
+    get_line(f, s, lg);
+    slog(1..lg+1):=s(1..lg) & NewLine;
+    lgtot:=lgtot+lg;
+  end if;
+  while not end_of_file(f) and lgtot<=(1000-lg) loop
+    get_line(f, s, lg);
+    debs:=lgtot+1;
+    lgtot:=lgtot+lg;
+    ecrire_ligne(debs);
+    ecrire_ligne(lgtot);
+    ecrire_ligne(lg);
+    slog(debs..lgtot):=s(1..lg);
+    lgtot:=lgtot+1;
+    slog(lgtot):=NewLine;
+  end loop;
+  ecrire_ligne(slog);
+  ChangerContenu(win, "Info", slog(1..lgtot));
+  reset(f, append_file);
+end AfficheLog;
+
+
 
 --------------------Pour fenêtre principale-------------------------------
 
@@ -194,60 +265,95 @@ procedure BoutonF(v : in out TV_Virus;
   nbmove, temps : natural;
   trscore : tR_score;
   fscore : p_score_IO.file_type;
+  vcoup:TV_Coups;
+  flog:text_io.file_type;
+
 begin
   tempsdebut := clock;
   Quitter := false;
   nbmove:=0;
+  vcoup(nbmove):=v;
+  nbmove:=1;
+  tempsDeb:=clock;
+  create(flog, out_file,"Partie.log");
+  put(flog, "Debut du niveau " & integer'image(partieNum));
+
+
     loop
     blockBouton:
       declare
         bouton : String := (AttendreBouton(win));
       begin
-        ecrire("test3");
+        --ecrire(Hist);
         ecrire_ligne(bouton);
         if bouton = "BoutonQuitter" then
           CacherFenetre(win);
-          Quitter := true;
+          Quitter := false;
         elsif bouton = "BoutonTuto" then
           LancerRegleJeu(f);
         elsif bouton = "BoutonAnnuler" then
-          if nbmove>0 then
+          if nbmove>1 then
             nbmove:=nbmove-1;
-          --else
-
-            --TODO MSG à mettre pour signaler que ce n'est pas possible
+            --ChangerContenu(win, "Info", "Deplacement" & integer'image(nbmove) & " annule");
+            put(flog, "Deplacement" & integer'image(nbmove) & " annule");
+            InitVect(v);
+            v:=vcoup(nbmove-1);
+          else
+            put(flog, "Impossible de revenir en arriere");
           end if;
+        elsif bouton = "BoutonReInit" then
+          nbmove:=0;
+          put(flog, "Recommencement du niveau : " & integer'image(partieNum));
+          InitVect(v);
+          CreeVectVirus(f,partieNum, v);
         elsif Bouton = "hd" and (coul/=vide or coul/=blanc) then
           Dir := hd;
           if possible(v,coul, Dir) then
             Deplacement(v,coul, Dir);
+            vcoup(nbmove):=v;
             nbmove:=nbmove+1;
+            put(flog, "Deplacement vers le Haut Droit");
+          else
+            put(flog, "Deplacement Impossible");
           end if;
         elsif Bouton = "hg" and (coul/=vide or coul/=blanc) then
           Dir := hg;
           if possible(v,coul, Dir) then
             Deplacement(v,coul, Dir);
+            vcoup(nbmove):=v;
             nbmove:=nbmove+1;
+            put(flog, "Deplacement vers le Haut Gauche");
+          else
+            put(flog, "Deplacement Impossible");
           end if;
         elsif Bouton = "bd" and (coul/=vide or coul/=blanc) then
           Dir := bd;
           if possible(v,coul, Dir) then
             Deplacement(v,coul, Dir);
+            vcoup(nbmove):=v;
             nbmove:=nbmove+1;
+            put(flog, "Deplacement vers le Bas Droit");
+          else
+            put(flog, "Deplacement Impossible");
           end if;
         elsif Bouton = "bg" and (coul/=vide or coul/=blanc)  then
           Dir := bg;
           if possible(v,coul, Dir) then
             Deplacement(v,coul, Dir);
+            vcoup(nbmove):=v;
             nbmove:=nbmove+1;
+            put(flog, "Deplacement vers le Bas Gauche");
+          else
+            put(flog, "Deplacement Impossible");
           end if;
         else
           coul := v(integer'value(bouton(1..1)),bouton(2));
-          ecrire(t_piece'image(coul));
+          put(flog, "Selection de la piece de couleur " & t_piece'image(coul));
         end if;
     end blockBouton;
-    exit when Gueri(v) or quitter;
     MajAffichage(v,win);
+    afficheLog(flog, win);
+    exit when Gueri(v) or quitter;
   end loop;
 
   ----------------------fin de la partie / traitement du score---------------------------
@@ -266,6 +372,8 @@ begin
   end if;
   write(fscore, trscore);
   close(fscore);
+
+  LancerFin(nbcoup, nom, temps);--TODO regarder ce que fait git + voir ou le mettre !!
 end boutonF;
 
 
@@ -276,11 +384,12 @@ end boutonF;
 procedure LancerJeu(v: in out tv_virus;
                     f : in out p_Piece_IO.file_type;
                     quitter : out boolean) is --TODO et ne pas oublier de detecter la fin
+
 --{} => {a affiché la fenetre de jeu}
--->> TODO nbcoup-------------------------------------------------
 FJeu : TR_Fenetre;
-hauteur, x, y, cote, ecart, boutonXY : natural;
+hauteur, x, y, cote, ecart, boutonX, boutonY : natural;
 coul : t_piece:= vide;
+flog:text_io.file_type;
 begin
   x := 50;
   y := 50;
@@ -288,54 +397,48 @@ begin
   cote:= 50;
   ecart:= 5;
   hauteur := 25;
-  boutonXY:=35;
-
+  boutonX:=30;
+  boutonY:=27;
+  -------------------------dessin fenetre---------
   InitialiserFenetres;
-  Fjeu:=DebutFenetre("AntiVirus",800,700);
-  AjouterBoutonImage(Fjeu,"hg","",500,400,boutonXY,boutonXY);
-  AjouterBoutonImage(Fjeu,"hd","",540,400,boutonXY,boutonXY);
-  AjouterBoutonImage(Fjeu,"bg","",500,440,boutonXY,boutonXY);
-  AjouterBoutonImage(Fjeu,"bd","",540,440,boutonXY,boutonXY);
+  Fjeu:=DebutFenetre("AntiVirus Niveau : " & integer'image(partieNum) ,800,700);
+  AjouterBoutonImage(Fjeu,"hg","",490,367,boutonX,boutonY);
+  AjouterBoutonImage(Fjeu,"hd","",523,367,boutonX,boutonY);
+  AjouterBoutonImage(Fjeu,"bg","",490,397,boutonX,boutonY);
+  AjouterBoutonImage(Fjeu,"bd","",523,397,boutonX,boutonY);
 
   ChangerImageBouton(Fjeu, "hg", "resources/arhg.xpm");
   ChangerImageBouton(Fjeu, "hd", "resources/arhd.xpm");
   ChangerImageBouton(Fjeu, "bg", "resources/arbg.xpm");
   ChangerImageBouton(Fjeu, "bd", "resources/arbd.xpm");
 
-  AjouterBouton(Fjeu,"BoutonQuitter","Quitter",145,650,70,50);
-  AjouterBouton(Fjeu,"BoutonTuto","Regles",320,650,70,50);
+  AjouterBouton(Fjeu,"BoutonMenu", "Menu", 120,640,70,50);
+  AjouterBouton(Fjeu,"BoutonQuitter","Quitter",50,640,70,50);
+  AjouterBouton(Fjeu,"BoutonAnnuler","Annuler",242,450,70,50);
+  AjouterBouton(Fjeu,"BoutonReInit","Recommencer",165,450,70,50);
+  AjouterBouton(Fjeu,"BoutonTuto","Regles",50,590,70,50);
 
+  AjouterTexteAscenseur(Fjeu, "Info", "Historique","", 500, 45, 270, 270);
 
-
-
-  --AjouterTexte(Fjeu,"A", "A", 58, hauteur, 20, 20);
-  --AjouterTexte(Fjeu,"B", "B", 93, hauteur, 20, 20);
-  --AjouterTexte(Fjeu,"C", "C", 128, hauteur, 20, 20);
-  --AjouterTexte(Fjeu,"D", "D", 162, hauteur, 20, 20);
-  --AjouterTexte(Fjeu,"E", "E", 196, hauteur, 20, 20);
-  --AjouterTexte(Fjeu,"F", "F", 230, hauteur, 20, 20);
-  --AjouterTexte(Fjeu,"G", "G",
-  AjouterTexte(Fjeu,"1", "1", 20, 60, 20, 20);
-  AjouterTexte(Fjeu,"2", "2", 20, 100, 20, 20);
-  AjouterTexte(Fjeu,"3", "3", 20, 140, 20, 20);
-  AjouterTexte(Fjeu,"4", "4", 20, 180, 20, 20);
-  AjouterTexte(Fjeu,"5", "5", 20, 220, 20, 20);
-  AjouterTexte(Fjeu,"6", "6", 20, 260, 20, 20);
-  AjouterTexte(Fjeu,"7", "7", 20, 300, 20, 20);
+  AjouterHorloge(Fjeu, "clock", "",600 ,550 ,150, 150);
 
   InitGrid(FJeu, "", x, y, cote, ecart);
   FinFenetre(Fjeu);
+  -------------------------fin dessin fenetre---------
+  ChangerContenu(FJeu, "Info", "Debut du niveau " & integer'image(partieNum));
+  InitVect(v);
+  CreeVectVirus(f,partieNum, v);
   MontrerFenetre(Fjeu);
   MajAffichage(v, Fjeu);
 
-
   BoutonF(v, f,Quitter, coul, fjeu);
+
   --TODO Faire le lien avec la fin
 
 end LancerJeu;
 
 
-
+----------------------Fin fenetre principale----------------------------------
 ---------------------Pour tuto---------------------------------
 
 procedure Regle1Block(v : in out TV_Virus; quitter: out Boolean) is

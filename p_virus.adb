@@ -196,8 +196,8 @@ begin
       end loop;
     end loop;
     return true;
-    exception
-    when constraint_error => ecrire_ligne("Vous êtes contre un mur!");return false;
+    --exception  --Deprecated
+    --when constraint_error => ecrire_ligne("Vous êtes contre un mur!");return false; --Deprecated
   end Possible;
 
 end p_virus;

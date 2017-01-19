@@ -1,6 +1,8 @@
 with p_fenbase ; use p_fenbase ;
 with Forms ; use Forms;
 with p_esiut; use p_esiut;
+with text_io; use text_io;
+
 with ada.calendar; use ada.calendar;
 with p_virus; use p_virus;
 with sequential_IO; use p_virus.p_Piece_IO;
@@ -17,6 +19,8 @@ type TR_score is record
   niveau : natural;
   date : time;
 end record;
+
+
 type tv_score is array (integer range <>) of TR_score;
 
 --deux fenetres pour choisir la partie, puis jouer la partie.
@@ -25,14 +29,14 @@ NewLine : constant Character := Character'Val (10);
 
 package p_score_IO is new sequential_IO (TR_score); use p_score_IO;
 
-E_choiceError:exception;
+type TV_Coups is array (0..256) of TV_Virus;
 
 ---------------------Corps
 
 procedure LancerPartie(f : in out p_Piece_IO.file_type; partie:out integer; Quitter : out boolean);
 --{} => {a affiché la fenetre Fpartie pour selectionner la partie}
 
-procedure LancerFin(nbcoup : in integer; nom : in string);
+procedure LancerFin(nbcoup : in natural; nom : in string; temps : in natural; win : in out TR_Fenetre);
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
 
 function calcscore(nbcoup, temps: in natural) return natural;
@@ -62,6 +66,8 @@ procedure Regle2Block(v:in out TV_Virus; quitter: out Boolean);
 procedure LancerRegleJeu(f:in out p_Piece_IO.file_type);
 --{} => {a afficher les regles du jeu dans une fenetre}
 
+procedure afficheLog(f: in out text_io.file_type; win : in out TR_Fenetre);
+--{} => {}
 
 procedure BoutonF(v : in out TV_Virus;
                   f : in out p_Piece_IO.file_type;
@@ -70,6 +76,9 @@ procedure BoutonF(v : in out TV_Virus;
                   win : in out TR_Fenetre);
 --{} => {}
 
+procedure LancerJeu(v: in out tv_virus; f : in out p_Piece_IO.file_type; quitter : out boolean; nbmove: out integer; temps : out natural; partieNum : in integer);
+--{} => {a affiché la fenetre de jeu} --TODO a supprimer ?
+
 
 procedure tribulle(v : in out tv_score; choix : in integer);
 --{} => {}
@@ -77,7 +86,11 @@ procedure tribulle(v : in out tv_score; choix : in integer);
 
 
 
+
 function infstrict(a,b : TR_score; choix : in integer) return boolean;
+--{} => {}
+
+--procedure triVect(f:in out p_Piece_IO.file_type; Vscore : in out TR_score);
 --{} => {}
 
 procedure permut(a,b : in out TR_score);
