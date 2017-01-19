@@ -405,10 +405,12 @@ begin
   ChangerImageBouton(Fjeu, "bd", "resources/arbd.xpm");
 
   AjouterBouton(Fjeu,"BoutonMenu", "Menu", 120,640,70,50);
+  AjouterBouton(Fjeu,"BoutonScore", "Scores", 120,590,70,50);
   AjouterBouton(Fjeu,"BoutonQuitter","Quitter",50,640,70,50);
+  AjouterBouton(Fjeu,"BoutonTuto","Regles",50,590,70,50);
+
   AjouterBouton(Fjeu,"BoutonAnnuler","Annuler",242,450,70,50);
   AjouterBouton(Fjeu,"BoutonReInit","Recommencer",165,450,70,50);
-  AjouterBouton(Fjeu,"BoutonTuto","Regles",50,590,70,50);
 
   AjouterTexteAscenseur(Fjeu, "Info", "Historique","", 500, 45, 270, 270);
 
@@ -584,9 +586,9 @@ procedure LancerFin(nbcoup, temps : in natural; win : in out TR_Fenetre; f : in 
   numPropartie:integer;
 begin
   Ffin:=DebutFenetre("Fin de partie",500,200);
-  AjouterBouton(Ffin,"BoutonPrecedent","Niveau" & NewLine & "precedent",290,110,70,50);
-  AjouterBouton(Ffin,"BoutonSuivant","Niveau" & NewLine & "Suivant",140,110,70,50);
-  AjouterBouton(Ffin, "BoutonNiveau", "Niveaux", 255,170,70,50);
+  AjouterBouton(Ffin,"BoutonSuivant","Niveau" & NewLine & "Suivant",290,110,70,50);
+  AjouterBouton(Ffin,"BoutonPrecedent","Niveau" & NewLine & "Precedent",140,110,70,50);
+  AjouterBouton(Ffin,"BoutonNiveau", "Niveaux", 255,170,70,50);
   AjouterBouton(Ffin,"BoutonQuitter","Quitter",180,170,70,50); --(margeG, margeH, boutonL, boutonH)
   AjouterBouton(Ffin,"BoutonRecommencer","Refaire" & NewLine & "le niveau",215,110,70,50);
   AjouterTexte(Ffin, "Score", natural'image(User.score), 200, 40, 150, 60);
@@ -708,16 +710,28 @@ procedure LancerRegleJeu(f:in out p_Piece_IO.file_type) is --NOTE LancerRegleJeu
 --{f ouvert} => {a afficher les regles du jeu dans une fenetre}
   V:TV_Virus;
   Q:boolean;
+  boutonX, boutonY : integer;
 begin
   reset(f, p_Piece_IO.in_file);
-
-  FRegleJeu:=DebutFenetre("Regle du jeu",550,700);
-  AjouterBouton(FRegleJeu,"BoutonContinuer","Continuer",145,650,70,50);
-  AjouterBouton(FRegleJeu,"BoutonQuitter","Quitter",320,650,70,50); --(margeG, margeH, boutonL, boutonH)
+  boutonX:=30;
+  boutonY:=27;
+  FRegleJeu:=DebutFenetre("Regle du jeu",600,700);
+  AjouterBouton(FRegleJeu,"BoutonQuitter","Quitter",145,650,70,50);
+  AjouterBouton(FRegleJeu,"BoutonContinuer","Continuer",320,650,70,50); --(margeG, margeH, boutonL, boutonH)
   AjouterTexte(FRegleJeu, "Info","test", 170, 500, 200, 100);
+  AjouterBoutonImage(FRegleJeu,"hg","",390,525,boutonX,boutonY);
+  AjouterBoutonImage(FRegleJeu,"hd","",423,525,boutonX,boutonY);
+  AjouterBoutonImage(FRegleJeu,"bg","",390,555,boutonX,boutonY);
+  AjouterBoutonImage(FRegleJeu,"bd","",423,555,boutonX,boutonY);
   --AjouterBouton(FRegleJeu,nombouton,"",(jpos-1)*35+50,(I-1)*35+40,30,30); --la multiplication permet d'appliquer des ecarts entre les boutons et l'ajout, l'ecarts aux bords.
   InitGrid(FRegleJeu, "", 50, 40, 60, 5);
   FinFenetre(FRegleJeu);
+
+  ChangerImageBouton(FRegleJeu, "hg", "resources/arhgI.xpm");
+  ChangerImageBouton(FRegleJeu, "hd", "resources/arhd.xpm");
+  ChangerImageBouton(FRegleJeu, "bg", "resources/arbg.xpm");
+  ChangerImageBouton(FRegleJeu, "bd", "resources/arbd.xpm");
+
 
   InitVect(v);
   CreeVectVirus(f,1, v);
@@ -728,6 +742,8 @@ begin
   Regle1Block(v, q);
 
   if not q then
+    ChangerImageBouton(FRegleJeu, "hg", "resources/arhg.xpm");
+    ChangerImageBouton(FRegleJeu, "hd", "resources/arhdII.xpm");
     Changertexte(FRegleJeu, "Info", "Vous vous deplacer en diagonale");
     Regle2Block(v, q);
     if not q then
