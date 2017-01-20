@@ -818,10 +818,7 @@ begin
           Cacherfenetre(FRegleJeu);
         end if;
       else
-        Cacherfenetre(FReg
-------------------------------recherche dichotomique---------------------------
-
-leJeu);
+        Cacherfenetre(FRegleJeu);
       end if;
     end if;
   end if;
@@ -925,10 +922,10 @@ begin
     fichversVect(fUser, VUser);
     i:=dicho(VUser, User.nom);
     if i/=VUser'last then
-      VUser(i):=User;
-      vecctdansfich(VUser, fUser);
+      VUser(i):=UserBack;
+      vectdansfich(VUser, fUser);
     else
-      write(fUser, User);
+      write(fUser, UserBack);
     end if;
     close(fUser);
   end VectDyn;
@@ -942,19 +939,19 @@ function dicho(v : in tv_user; nom : in string) return integer is
 --{} => {recherche nom dans v et renvoie un entier}
   m, inf, sup : integer;
 begin
-  if nom > V(v'last) then
+  if nom > V(v'last).nom then
       return 0;
   else
     inf := V'first; sup := V'last;
     while inf < sup loop
       m := (inf+sup)/2;
-      if  <= V(m) then
+      if nom <= V(m).nom then
         sup := m;
       else
         inf := m+1;
       end if;
     end loop;
-    if nom = V(sup) then
+    if nom = V(sup).nom then
       return sup;
     else
       return 0;
@@ -962,12 +959,11 @@ begin
   end if;
   end dicho;
 
-  procedure vectdansfich(v : in tv_user;f in out p_user_IO.file_type) is
+procedure vectdansfich(v : in tv_user;f : in out p_user_IO.file_type) is
 --{} => {met v dans f}
   begin
     for i in v'range loop
       write(f, v(i));
-      i:=i+1;
     end loop;
   end vectdansfich;
 --------------------------------------------------------------------------------

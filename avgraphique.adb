@@ -34,9 +34,9 @@ begin --avgraphique
       VUser: TV_User(1..nbElem(fUser));
     begin
     fichversVect(fUser, VUser);
-    i:=dicho(VUser, User.nom);
+    i:=dicho(VUser, UserBack.nom);
     if i/=VUser'last then
-      VUser(i):=User;
+      VUser(i):=UserBack;
       LancerJeu(v_grille,fconfinit, stop, user.niveau);
     end if;
     close(fUser);
