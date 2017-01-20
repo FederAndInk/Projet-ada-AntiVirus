@@ -5,8 +5,7 @@ package body p_vuegraph is
   -----------------------------------------Partie score------------------------------------------------------
 
 procedure LancerScores is --NOTE LancerScores
-  ----{} => {}
-  --Tsaisienom : string(1..15);
+  ----{} => {affiche la fenêtre des scores}
   vertic : natural;
   fscore : p_score_IO.file_type;
 begin
@@ -60,6 +59,7 @@ begin
 end LancerScores;
 
 procedure fichversVect(f : in out p_score_IO.file_type; v : in out Tv_score) is --NOTE fichversVect
+  ----{f ouvert, f- = <>} => {copie des valeurs de f dans v}
   i : integer;
 begin
   reset(f, in_file);
@@ -73,7 +73,7 @@ end fichversVect;
 
 
 function nbElem(f : in p_score_IO.file_type) return natural is --NOTE nbelem
-  ----{f ouvert, f- = <>} => {}
+  ----{f ouvert, f- = <>} => {retourne le nombre d'élément du fichier f}
   nbelem : natural;
   i : TR_score;
 begin
@@ -87,7 +87,7 @@ end nbElem;
 
 
 function infstrict(a,b : TR_score; choix : in integer) return boolean is --NOTE infstrict
---{} => {}
+--{} => {compare a et b retourne true si a<b}
 begin
   if choix = 0 then
     return (a.nom <b.nom) or (a.nom = b.nom and a.score<b.score);
@@ -105,7 +105,7 @@ begin
 end infstrict;
 
 procedure permut(a,b : in out TR_score) is-- intervertis les deux éléments du vecteur pour les trier NOTE permut
---{} => {}
+--{infstrict => true } => {échange a et b de place dans le vecteur}
 c : TR_score;
 begin
   c := a;
@@ -127,7 +127,7 @@ end tribulle;
 
 
   procedure Afficherscore(v : in out Tv_score; Fen : in out TR_Fenetre) is --NOTE Afficherscore
-  ------ {} => {}
+---- {} => {Affiche une fenêtre des scores}
     grosstring : string(1..10000);
     lgtot, debs, lg : integer;
     i:integer:=V'first;
@@ -302,7 +302,7 @@ end InitGrid;
 ------------------------------------------------------
 
 procedure MajAffichage(v : in TV_Virus; Fen : in out TR_Fenetre) is --NOTE MajAffichage
---{} => {}
+--{aucune case de v n'est vide} => {a mis a jour les couleurs des boutons de la fenetre Jeu en fonction de ce qu'il y a dans V}
 j:character;
 nombouton:string(1..2);
 begin --MajAffichage
@@ -336,8 +336,8 @@ end MajAffichage;
 ------------------------Fichier log------------------------------------
 
 procedure afficheLog(f: in out text_io.file_type; win : in out TR_Fenetre) is --NOTE afficheLog
---{} => {}
-  slog : string(1..1000);
+--{} => {enregistre chaque action dans le jeu pour le renvoyer sur la fenêtre}
+  slog : string(1..10000);
   s:string(1..40);
   lg, lgtot, debs:integer;
 begin --log
@@ -348,7 +348,7 @@ begin --log
     slog(1..lg+1):=s(1..lg) & NewLine;
     lgtot:=lgtot+lg;
   end if;
-  while not end_of_file(f) and lgtot<=(1000-lg) loop
+  while not end_of_file(f) and lgtot<=(10000-lg) loop
     get_line(f, s, lg);
     debs:=lgtot+1;
     lgtot:=lgtot+lg;
@@ -433,7 +433,7 @@ procedure BoutonF(v : in out TV_Virus; --NOTE BoutonF
                   coul : in out t_piece;
                   win : in out TR_Fenetre;
                   partieNum : in integer) is
---{} => {}
+--{} => {Fait fonctionner le jeu, jusqu'à la victoire}
   Dir: T_Direction;
   tempsdebut, tempsfin : time;
   nbmove, temps : natural;
@@ -787,8 +787,7 @@ end LancerRegleJeu;
 
 
 procedure ScoresFen is --NOTE ScoresFen
-  ----{} => {}
-  --Tsaisienom : string(1..15);
+  ----{} => {affiche la fenêtre des scores}
   vertic : natural;
   fscore : p_score_IO.file_type;
 begin

@@ -45,26 +45,26 @@ function convertPiece(piece : in t_piece) return T_Couleur;
 --------------------------------------------------------------------------
 
 procedure LancerScores;
-----{} => {}
+----{} => {affiche la fenêtre des scores}
 
 procedure fichversVect(f : in out p_score_IO.file_type; v : in out Tv_score);
---{} => {}
+--{f ouvert, f- = <>} => {copie des valeurs de f dans v}
 
 function nbElem(f : in p_score_IO.file_type) return natural;
-----{} => {}
+  ----{f ouvert, f- = <>} => {retourne le nombre d'élément du fichier f}
 
 procedure Afficherscore(v : in out Tv_score; Fen : in out TR_Fenetre);
----- {} => {}
+---- {} => {Affiche une fenêtre des scores}
 
 function infstrict(a,b : TR_score; choix : in integer) return boolean;
---{} => {}
+--{} => {compare a et b retourne true si a<b}
 
 procedure permut(a,b : in out TR_score);
---{} => {}
+--{infstrict => true } => {échange a et b de place dans le vecteur}
 
 
 procedure tribulle(v : in out tv_score; choix : in integer);
---{} => {}
+--{v non trié} => {v trié suivant choix}
 
 
 -----------------------------------------2
@@ -84,7 +84,7 @@ procedure MajAffichage(v : in TV_Virus; Fen : in out TR_Fenetre);
 
 
 procedure afficheLog(f: in out text_io.file_type; win : in out TR_Fenetre);
---{} => {}
+--{} => {enregistre chaque action dans le jeu pour le renvoyer sur la fenêtre}
 
 procedure LancerJeu(v: in out tv_virus;
 f : in out p_Piece_IO.file_type;
@@ -98,13 +98,13 @@ Quitter : out boolean;
 coul : in out t_piece;
 win : in out TR_Fenetre;
 partieNum : in integer);
---{} => {}
+--{} => {Fait fonctionner le jeu, jusqu'à la victoire}
 
 
 ---------------------------4
 
 function calcscore(nbcoup, temps: in natural) return natural;
-----{} => {}
+----{fin partie} => {retourne le score du joueur}
 
 procedure LancerFin(nbcoup, temps : in natural; win : in out TR_Fenetre; f : in out p_Piece_IO.file_type; v : in out TV_Virus; partieNum : in integer);
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
@@ -123,7 +123,7 @@ procedure LancerRegleJeu(f:in out p_Piece_IO.file_type);
 
 ------------------------Scores
 procedure ScoresFen; --NOTE ScoresFen
-  ----{} => {}
+  ----{} => {affiche la fenêtre des scores}
 
 ---------------------------------------------------------------------
 end p_vuegraph;
