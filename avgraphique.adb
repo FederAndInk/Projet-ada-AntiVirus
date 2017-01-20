@@ -5,14 +5,15 @@ with p_esiut; use p_esiut;
 with ada.calendar; use ada.calendar;
 with p_virus; use p_virus;
 with text_io; use p_virus.p_Piece_IO;
-use p_virus.p_Direction_IO, p_virus.p_Pieceenum_IO, p_vuegraph.p_score_IO;
+use p_virus.p_Direction_IO, p_virus.p_Pieceenum_IO, p_vuegraph.p_score_IO, p_vuegraph.p_user_IO;
 with ada.directories; use ada.directories;
 
 procedure avgraphique is
-  partieNum : integer;
+  partieNum, i: integer;
   stop : boolean;
   fconfinit : p_Piece_IO.file_type;
   v_grille : tv_virus;
+  fUser : p_user_IO.file_type;
 begin --avgraphique
 
 
@@ -26,7 +27,21 @@ begin --avgraphique
     p_User_IO.create(fUser, out_file, "f_User.dat");
   else
     p_User_IO.open(fUser, p_User_IO.append_file, "f_score.dat");
-    dicho()
+
+
+    VectDyn:
+    declare
+      VUser: TV_User(1..nbElem(fUser));
+    begin
+    fichversVect(fUser, VUser);
+    i:=dicho(VUser, User.nom);
+    if i/=VUser'last then
+      VUser(i):=User;
+      LancerJeu(v_grille,fconfinit, stop, user.niveau);
+    end if;
+    close(fUser);
+
+  end VectDyn;
   end if;
 
   close(fUser);

@@ -153,7 +153,7 @@ function dicho(v : in tv_user; nom : in string) return integer;
 --{} => {recherche nom dans v et renvoie un entier}
 
 
-  procedure vectdansfich(v : in tv_user;f in out p_user_IO.file_type);
+procedure vectdansfich(v : in tv_user;f : in out p_user_IO.file_type);
 --{} => {met v dans f}
 ---------------------------------------------------------------------
 end p_vuegraph;
