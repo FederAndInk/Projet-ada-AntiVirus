@@ -20,12 +20,21 @@ type TR_score is record
   date : time;
 end record;
 
-User:TR_score;
+type TR_User is record
+  nom : string(1..10);
+  niveau : natural;
+  partieSauv : TV_Virus;
+  coupsSauv : TV_Coups;
+  coupPos : integer;
+end record;
+
+User : TR_score;
+UserBack : TR_User;
 
 type tv_score is array (integer range <>) of TR_score;
 
 --deux fenetres pour choisir la partie, puis jouer la partie.
-Fpartie, FJeu, FRegleJeu , Ffin, Fenscore, FJScores : TR_Fenetre;
+Fpartie, FJeu, FRegleJeu , Ffin, Fenscore, FJScores, Fsauv : TR_Fenetre;
 NewLine : constant Character := Character'Val (10);
 
 E_choiceError : exception;
@@ -124,6 +133,11 @@ procedure LancerRegleJeu(f:in out p_Piece_IO.file_type);
 ------------------------Scores
 procedure ScoresFen; --NOTE ScoresFen
   ----{} => {affiche la fenêtre des scores}
+
+------------------------Backup----------------------------------
+
+procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in TV_Coups; PosVc : in integer); --NOTE LancerSauv
+  ----{} => {Afficher un popup pour sauvegarder la partie}
 
 ---------------------------------------------------------------------
 end p_vuegraph;

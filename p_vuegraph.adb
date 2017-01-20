@@ -15,14 +15,14 @@ begin
   Ajouterchamp(Fenscore, "saisienom","Saisir votre nom", "", 150, vertic, 100, 30);
   AjouterBouton(Fenscore,"Bsaisienom","valider",300,vertic-10,50,50);
   --AjouterBouton(Fenscore,"BoutonOk","Ok",275,vertic-10,50,50);
-  AjouterTexteAscenseur(Fenscore, "txtasc","","",50, vertic+50, 300, 400);
+  AjouterTexteAscenseur(Fenscore, "txtScores","","",50, vertic+50, 300, 400);
 
   FinFenetre(Fenscore);
   MontrerFenetre(Fenscore);
   if not exists("f_score.dat") then
     ecrire_ligne("création du fichier...");
     p_score_IO.create(fscore, out_file, "f_score.dat");
-    ChangerContenu(Fenscore, "txtasc", "Aucun score enregistre");
+    ChangerContenu(Fenscore, "txtScores", "Aucun score enregistre");
   else
     p_score_IO.open(fscore, p_score_IO.in_file, "f_score.dat");
 
@@ -43,9 +43,11 @@ begin
     begin
       if nom'length>10 then
         User.nom(1..10) := nom(1..10);
+        UserBack.nom:=User.nom;
       else
         User.nom(1..nom'last) := nom;
         User.nom(nom'last+1..10):= (others => ' '); -- fonctionne quand meme avec 10 caracteres pile !
+        UserBack.nom:=User.nom;
       end if;
       ecrire("Salut, ");
       ecrire(User.nom); ecrire_ligne("!");
@@ -153,7 +155,7 @@ end tribulle;
         end stringDyn;
       end loop;
         ecrire(grosstring(1..lgtot-1));
-        ChangerContenu(Fen, "txtasc", grosstring(1..lgtot));
+        ChangerContenu(Fen, "txtScores", grosstring(1..lgtot));
   end Afficherscore;
 
 
@@ -175,9 +177,9 @@ begin --LancerPartie
   quitter:=false;
 
   Fpartie:=DebutFenetre("Selection de la partie",700,700);
-  AjouterBouton(Fpartie,"BoutonCommencer","Commencer !",225,650,70,50);
+  AjouterBouton(Fpartie,"BoutonTuto","Regles",225,650,70,50);
   AjouterBouton(Fpartie,"BoutonQuitter","Quitter",400,650,70,50); --(margeG, margeH, boutonL, boutonH)
-  AjouterBouton(Fpartie,"BoutonTuto","Regles",313,650,70,50);
+  AjouterBouton(Fpartie,"BoutonCommencer","Commencer",313,650,70,50);
 
   AjouterTexte(Fpartie, "Info", "", 260, 20, 160, 20);
 
@@ -444,6 +446,7 @@ procedure BoutonF(v : in out TV_Virus; --NOTE BoutonF
 begin
   tempsdebut := clock;
   Quitter := false;
+  User.niveau :=partieNum; --on sauvegarde le niveau au debut au cas d'une sauvegarde de partie;
   temps:=0;
   nbmove:=0;
   vcoup(nbmove):=v;
@@ -459,9 +462,10 @@ begin
         bouton : String := (AttendreBouton(win));
       begin
         if bouton = "BoutonQuitter" then
+          -- TODO faire une sauvegarde de l'etat du jeu :)
+          LancerSauv(v);
           CacherFenetre(win);
           Quitter := true;
-          -- TODO faire une sauvegarde de l'etat du jeu :)
         elsif bouton = "BoutonTuto" then
           LancerRegleJeu(f);
         --elsif bouton="BoutonMenu" then
@@ -546,7 +550,6 @@ begin
   temps := temps + natural(tempsfin - tempsdebut);
 
   User.score := calcscore(nbmove, temps);
-  User.niveau :=partieNum;
 
   User.date := clock;
 
@@ -639,6 +642,8 @@ begin
         CacherFenetre(win);
       elsif bouton="BoutonRecommencer" then
         LancerJeu(v,f, fin, partieNum);
+      elsif bouton="BoutonScores" then
+        ScoresFen;
       end if;
     end boutonC;
     abort cligno;
@@ -785,7 +790,7 @@ end LancerRegleJeu;
 
 -------------------------Fin regles---------------------------------------
 
-
+------------------------Scores window-------------------------------------
 procedure ScoresFen is --NOTE ScoresFen
   ----{} => {affiche la fenêtre des scores}
   vertic : natural;
@@ -793,9 +798,9 @@ procedure ScoresFen is --NOTE ScoresFen
 begin
   vertic := 50;
   InitialiserFenetres;
-  FJScores:= DebutFenetre("AntiVirus",400,500);
+  FJScores:= DebutFenetre("Score AntiVirus",400,500);
   AjouterBouton(FJScores,"BoutonOk","Ok",275,vertic-10,50,50);
-  AjouterTexteAscenseur(FJScores, "txtasc","","",50, vertic+50, 300, 400);
+  AjouterTexteAscenseur(FJScores, "txtScores","","",50, vertic+50, 300, 400);
 
   FinFenetre(FJScores);
   MontrerFenetre(FJScores);
@@ -803,7 +808,7 @@ begin
   if not exists("f_score.dat") then
     ecrire_ligne("création du fichier...");
     p_score_IO.create(fscore, out_file, "f_score.dat");
-    ChangerContenu(FJScores, "txtasc", "Aucun score enregistre");
+    ChangerContenu(FJScores, "txtScores", "Aucun score enregistre");
   else
     p_score_IO.open(fscore, p_score_IO.in_file, "f_score.dat");
 
@@ -822,5 +827,60 @@ begin
     CacherFenetre(FJScores);
   end if;
 end ScoresFen;
+--------------------------------------------------------------------------------
+------------------------------Backup window-------------------------------------
+
+procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in TV_Coups; PosVc : in integer) is --NOTE LancerSauv
+  ----{} => {Afficher un popup pour sauvegarder la partie}
+  --Tsaisienom : string(1..15);
+  fscore : p_score_IO.file_type;
+  v:TV_Virus;
+begin
+  InitialiserFenetres;
+  Fsauv:= DebutFenetre("Sauvegarder ?",400,100);
+  AjouterBouton(Fsauv,"BoutonOuiS","Oui",205,70,70,50);
+  AjouterBouton(Fsauv,"BoutonNonS","Non",125,70,70,50);
+  AjouterTexte(Fsauv, "txtSauv", "Voulez vous sauvegarder la partie en cours ?", 55, 20, 300, 20);
+  FinFenetre(Fsauv);
+  MontrerFenetre(Fsauv);
+
+  UserBack.niveau:=User.niveau;
+
+  if AttendreBouton(Fsauv)="BoutonNonS" then
+    InitVect(v);
+    CreeVectVirus(f,partieNum, v);
+    UserBack.partieSauv:=v;-- on ne sauvegarde rien, on prend la part
+    UserBack.coupsSauv:=v;
+    UserBack.coupPos:=0;
+  else
+    UserBack.partieSauv:=vSauv; --On sauvegarde le plateau
+    UserBack.coupPos:=PosVc;
+    UserBack.coupsSauv:=Vcoups;
+  end if;
+
+  CacherFenetre(Fsauv);
+
+  --if not exists("f_score.dat") then
+  --  ecrire_ligne("création du fichier...");
+  --  p_score_IO.create(fscore, out_file, "f_score.dat");
+  --  ChangerContenu(Fsauv, "txtScores", "Aucun score enregistre");
+  --else
+  --  p_score_IO.open(fscore, p_score_IO.in_file, "f_score.dat");
+  --
+  --  VecteurScore:
+  --  declare
+  --    vscore:Tv_score(1..nbElem(fscore));
+  --  begin
+  --    fichversVect(fscore, vscore);
+  --    Afficherscore(vscore, Fsauv);
+  --  end VecteurScore;
+  --
+  --end if;
+  --close(fscore);
+
+end LancerSauv;
+
+
+--------------------------------------------------------------------------------
 
 end p_vuegraph;
