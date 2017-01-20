@@ -15,6 +15,7 @@ begin
   Ajouterchamp(Fenscore, "saisienom","Saisir votre nom", "", 150, vertic, 100, 30);
   AjouterBouton(Fenscore,"Bsaisienom","valider",300,vertic-10,50,50);
   --AjouterBouton(Fenscore,"BoutonOk","Ok",275,vertic-10,50,50);
+  AjouterTexte(Fpartie, "Info", "Bonjour et bienvenue sur le jeu antivirus !", 40, 15, 380, 20);
   AjouterTexteAscenseur(Fenscore, "txtScores","","",50, vertic+50, 300, 400);
 
   FinFenetre(Fenscore);
@@ -210,7 +211,7 @@ begin --LancerPartie
   AjouterBouton(Fpartie,"BoutonQuitter","Quitter",400,650,70,50); --(margeG, margeH, boutonL, boutonH)
   AjouterBouton(Fpartie,"BoutonCommencer","Commencer",313,650,70,50);
 
-  AjouterTexte(Fpartie, "Info", "", 260, 20, 160, 20);
+  AjouterTexte(Fpartie, "Info", "Choisissez le niveau auquel vous voulez jouer", 220, 20, 360, 20);
 
   -- pour les boutons des niveaux
   for I in 1..4 loop
