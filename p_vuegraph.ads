@@ -25,7 +25,7 @@ User:TR_score;
 type tv_score is array (integer range <>) of TR_score;
 
 --deux fenetres pour choisir la partie, puis jouer la partie.
-Fpartie, FJeu, FRegleJeu , Ffin, Fenscore : TR_Fenetre;
+Fpartie, FJeu, FRegleJeu , Ffin, Fenscore, FJScores : TR_Fenetre;
 NewLine : constant Character := Character'Val (10);
 
 E_choiceError : exception;
@@ -121,5 +121,9 @@ procedure Regle2Block(v:in out TV_Virus; quitter: out Boolean);
 procedure LancerRegleJeu(f:in out p_Piece_IO.file_type);
 --{} => {a afficher les regles du jeu dans une fenetre}
 
+------------------------Scores
+procedure ScoresFen; --NOTE ScoresFen
+  ----{} => {}
 
+---------------------------------------------------------------------
 end p_vuegraph;

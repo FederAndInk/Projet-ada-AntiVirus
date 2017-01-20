@@ -15,6 +15,7 @@ begin
   Fenscore:= DebutFenetre("AntiVirus",400,500);
   Ajouterchamp(Fenscore, "saisienom","Saisir votre nom", "", 150, vertic, 100, 30);
   AjouterBouton(Fenscore,"Bsaisienom","valider",300,vertic-10,50,50);
+  --AjouterBouton(Fenscore,"BoutonOk","Ok",275,vertic-10,50,50);
   AjouterTexteAscenseur(Fenscore, "txtasc","","",50, vertic+50, 300, 400);
 
   FinFenetre(Fenscore);
@@ -142,13 +143,7 @@ end tribulle;
         declare
           strInter : string:= (v(i).nom & '|' & integer'image(v(i).score) & "|    " & integer'image(v(i).niveau) & '|' & integer'image(Day(v(i).date)) & '/' & integer'image(Month(v(i).date)) & '/' & integer'image(Year(v(i).date)));
         begin
-          ecrire_ligne(i);
-          --if not end_of_file(f) then
-          --  grosstring(1..lg+1):=s(1..lg) & NewLine;
-          --  lgtot:=lgtot+lg;
-          --end if;
           lg:=strInter'last;
-          --get_line(f, s, lg);
           debs:=lgtot+1;
           lgtot:=lgtot+lg;
           grosstring(debs..lgtot):=strInter(strInter'First..lg);
@@ -157,7 +152,6 @@ end tribulle;
           i:=i+1;
         end stringDyn;
       end loop;
-        --grosstring((i-1)*strInter'last..(i*strInter'last)) := strInter;
         ecrire(grosstring(1..lgtot-1));
         ChangerContenu(Fen, "txtasc", grosstring(1..lgtot));
   end Afficherscore;
@@ -302,7 +296,6 @@ begin --InitGrid
   end loop;
   for i in TV_Virus'range(1) loop
     AjouterTexte(Fen,integer'image(i)(2..2), integer'image(i)(2..2), X-20,(i-1)*(cote+ecart)+Y+cote/(ecart-ecart/2), 20, 20);
-    ecrire_ligne(cote+ecart+40);
   end loop;
 end InitGrid;
 
@@ -426,7 +419,7 @@ begin
   MajAffichage(v, Fjeu);
 
   BoutonF(v, f,Quitter, coul, fjeu, partieNum);
-  quitter:=true;
+  --quitter:=true; >>Deprecated
 end LancerJeu;
 
 
@@ -451,9 +444,11 @@ procedure BoutonF(v : in out TV_Virus; --NOTE BoutonF
 begin
   tempsdebut := clock;
   Quitter := false;
+  temps:=0;
   nbmove:=0;
   vcoup(nbmove):=v;
   --nbmove:=1;
+
   create(flog, out_file,"Partie.log");
   put(flog, "Debut du niveau " & integer'image(partieNum));
 
@@ -463,13 +458,22 @@ begin
       declare
         bouton : String := (AttendreBouton(win));
       begin
-        --ecrire(Hist);
-        ecrire_ligne(bouton);
         if bouton = "BoutonQuitter" then
           CacherFenetre(win);
-          Quitter := false;
+          Quitter := true;
+          -- TODO faire une sauvegarde de l'etat du jeu :)
         elsif bouton = "BoutonTuto" then
           LancerRegleJeu(f);
+        --elsif bouton="BoutonMenu" then
+        --tempsfin := clock;
+        --temps:=tempsfin-tempsdebut; --on met "en pause" le timer lorsqu'on est dans un menu
+        --  --TODO menu
+        --tempsdebut := clock;
+        elsif bouton="BoutonScore" then
+          tempsfin := clock;
+          temps:=natural(tempsfin-tempsdebut); --on met "en pause" le timer lorsqu'on est dans un menu
+          ScoresFen;
+          tempsdebut := clock;
         elsif bouton = "BoutonAnnuler" then
           if nbmove>1 then
             nbmove:=nbmove-1;
@@ -539,7 +543,7 @@ begin
 
   ----------------------fin de la partie / traitement du score-------
   tempsfin := clock;
-  temps := natural(tempsfin - tempsdebut);
+  temps := temps + natural(tempsfin - tempsdebut);
 
   User.score := calcscore(nbmove, temps);
   User.niveau :=partieNum;
@@ -574,7 +578,11 @@ function calcscore(nbcoup, temps : in natural) return natural is --NOTE calcscor
 ----{nbcoup et temps} => {= resultat est le score}
 
 begin
-  return natural(((1.0/float(nbcoup) + 1.0/float(temps)) * 150000000.0));
+  if nbcoup/=0 and temps/=0 then
+    return natural(((1.0/float(nbcoup) + 1.0/float(temps)) * 150000000.0));
+  else
+    return 00000000000;
+  end if;
 end calcscore;
 
 
@@ -616,9 +624,10 @@ begin
     begin
       CacherFenetre(Ffin);
       CacherFenetre(Win);
-      if bouton="BoutonPrecedent" then
+      abort cligno;
+      if bouton="BoutonPrecedent" and partieNum>1 then
         LancerJeu(v,f, fin, partieNum-1);
-      elsif bouton="BoutonSuivant" then
+      elsif bouton="BoutonSuivant" and partieNum<20 then
         LancerJeu(v,f, fin, partieNum+1);
       elsif bouton="BoutonNiveau" then
         LancerPartie(f, numPropartie, fin);
@@ -631,9 +640,8 @@ begin
       elsif bouton="BoutonRecommencer" then
         LancerJeu(v,f, fin, partieNum);
       end if;
-      abort cligno;
     end boutonC;
-
+    abort cligno;
   end clignoScore;
 end LancerFin;
 
@@ -777,5 +785,43 @@ end LancerRegleJeu;
 
 -------------------------Fin regles---------------------------------------
 
+
+procedure ScoresFen is --NOTE ScoresFen
+  ----{} => {}
+  --Tsaisienom : string(1..15);
+  vertic : natural;
+  fscore : p_score_IO.file_type;
+begin
+  vertic := 50;
+  InitialiserFenetres;
+  FJScores:= DebutFenetre("AntiVirus",400,500);
+  AjouterBouton(FJScores,"BoutonOk","Ok",275,vertic-10,50,50);
+  AjouterTexteAscenseur(FJScores, "txtasc","","",50, vertic+50, 300, 400);
+
+  FinFenetre(FJScores);
+  MontrerFenetre(FJScores);
+
+  if not exists("f_score.dat") then
+    ecrire_ligne("création du fichier...");
+    p_score_IO.create(fscore, out_file, "f_score.dat");
+    ChangerContenu(FJScores, "txtasc", "Aucun score enregistre");
+  else
+    p_score_IO.open(fscore, p_score_IO.in_file, "f_score.dat");
+
+    VecteurScore:
+    declare
+      vscore:Tv_score(1..nbElem(fscore));
+    begin
+      fichversVect(fscore, vscore);
+      Afficherscore(vscore, FJScores);
+    end VecteurScore;
+
+  end if;
+  close(fscore);
+
+  if AttendreBouton(FJScores)="BoutonOk" then
+    CacherFenetre(FJScores);
+  end if;
+end ScoresFen;
 
 end p_vuegraph;
