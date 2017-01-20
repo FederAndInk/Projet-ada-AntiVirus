@@ -463,7 +463,7 @@ begin
       begin
         if bouton = "BoutonQuitter" then
           -- TODO faire une sauvegarde de l'etat du jeu :)
-          LancerSauv(v);
+          LancerSauv(v, vcoup, nbmove, f);
           CacherFenetre(win);
           Quitter := true;
         elsif bouton = "BoutonTuto" then
@@ -830,7 +830,7 @@ end ScoresFen;
 --------------------------------------------------------------------------------
 ------------------------------Backup window-------------------------------------
 
-procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in TV_Coups; PosVc : in integer) is --NOTE LancerSauv
+procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in TV_Coups; PosVc : in integer; f : in out p_Piece_IO.file_type) is --NOTE LancerSauv
   ----{} => {Afficher un popup pour sauvegarder la partie}
   --Tsaisienom : string(1..15);
   fscore : p_score_IO.file_type;
@@ -843,14 +843,15 @@ begin
   AjouterTexte(Fsauv, "txtSauv", "Voulez vous sauvegarder la partie en cours ?", 55, 20, 300, 20);
   FinFenetre(Fsauv);
   MontrerFenetre(Fsauv);
+  reset(f, in_file);
 
   UserBack.niveau:=User.niveau;
 
   if AttendreBouton(Fsauv)="BoutonNonS" then
     InitVect(v);
-    CreeVectVirus(f,partieNum, v);
+    CreeVectVirus(f,UserBack.niveau, v);
     UserBack.partieSauv:=v;-- on ne sauvegarde rien, on prend la part
-    UserBack.coupsSauv:=v;
+    UserBack.coupsSauv:=Vcoups;
     UserBack.coupPos:=0;
   else
     UserBack.partieSauv:=vSauv; --On sauvegarde le plateau

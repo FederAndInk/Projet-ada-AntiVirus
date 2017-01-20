@@ -20,6 +20,8 @@ type TR_score is record
   date : time;
 end record;
 
+type TV_Coups is array (0..256) of TV_Virus;
+
 type TR_User is record
   nom : string(1..10);
   niveau : natural;
@@ -41,7 +43,6 @@ E_choiceError : exception;
 
 package p_score_IO is new sequential_IO (TR_score); use p_score_IO;
 
-type TV_Coups is array (0..256) of TV_Virus;
 
 ---------------------Corps
 
@@ -136,7 +137,7 @@ procedure ScoresFen; --NOTE ScoresFen
 
 ------------------------Backup----------------------------------
 
-procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in TV_Coups; PosVc : in integer); --NOTE LancerSauv
+procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in TV_Coups; PosVc : in integer; f : in out p_Piece_IO.file_type); --NOTE LancerSauv
   ----{} => {Afficher un popup pour sauvegarder la partie}
 
 ---------------------------------------------------------------------
