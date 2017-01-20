@@ -34,6 +34,7 @@ User : TR_score;
 UserBack : TR_User;
 
 type tv_score is array (integer range <>) of TR_score;
+type TV_User is array (integer range <>) of TR_User;
 
 --deux fenetres pour choisir la partie, puis jouer la partie.
 Fpartie, FJeu, FRegleJeu , Ffin, Fenscore, FJScores, Fsauv : TR_Fenetre;
@@ -42,6 +43,7 @@ NewLine : constant Character := Character'Val (10);
 E_choiceError : exception;
 
 package p_score_IO is new sequential_IO (TR_score); use p_score_IO;
+package p_User_IO is new sequential_IO (TR_User); use p_User_IO;
 
 
 ---------------------Corps
@@ -60,7 +62,14 @@ procedure LancerScores;
 procedure fichversVect(f : in out p_score_IO.file_type; v : in out Tv_score);
 --{f ouvert, f- = <>} => {copie des valeurs de f dans v}
 
+procedure fichversVect(f : in out p_User_IO.file_type; v : in out TV_User); --NOTE fichversVect
+  ----{f ouvert, f- = <>} => {copie des valeurs de f dans v}
+
+
 function nbElem(f : in p_score_IO.file_type) return natural;
+  ----{f ouvert, f- = <>} => {retourne le nombre d'élément du fichier f}
+
+function nbElem(f : in p_User_IO.file_type) return natural; --NOTE nbelem
   ----{f ouvert, f- = <>} => {retourne le nombre d'élément du fichier f}
 
 procedure Afficherscore(v : in out Tv_score; Fen : in out TR_Fenetre);

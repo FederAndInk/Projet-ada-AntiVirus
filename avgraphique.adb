@@ -21,6 +21,16 @@ begin --avgraphique
 
   LancerScores;
 
+  if not exists("f_User.dat") then
+    ecrire_ligne("création du fichier...");
+    p_User_IO.create(fUser, out_file, "f_User.dat");
+  else
+    p_User_IO.open(fUser, p_User_IO.append_file, "f_score.dat");
+    dicho()
+  end if;
+
+  close(fUser);
+
   LancerPartie(fconfinit, partieNum, stop);
   if not stop then
     LancerJeu(v_grille,fconfinit, stop, partieNum);

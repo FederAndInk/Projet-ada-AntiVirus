@@ -74,10 +74,38 @@ begin
 end fichversVect;
 
 
+procedure fichversVect(f : in out p_User_IO.file_type; v : in out TV_User) is --NOTE fichversVect
+  ----{f ouvert, f- = <>} => {copie des valeurs de f dans v}
+  i : integer;
+begin
+  reset(f, in_file);
+  i := v'first;
+  while not end_of_file(f) loop
+    read(f,v(i));
+    i := i+1;
+  end loop;
+  reset(f, in_file);
+end fichversVect;
+
+
 function nbElem(f : in p_score_IO.file_type) return natural is --NOTE nbelem
   ----{f ouvert, f- = <>} => {retourne le nombre d'élément du fichier f}
   nbelem : natural;
   i : TR_score;
+begin
+  nbelem := 0;
+  while not end_of_file(f) loop
+    read(f,i);
+    nbelem := nbelem+1;
+  end loop;
+  return nbelem;
+end nbElem;
+
+
+function nbElem(f : in p_User_IO.file_type) return natural is --NOTE nbelem
+  ----{f ouvert, f- = <>} => {retourne le nombre d'élément du fichier f}
+  nbelem : natural;
+  i : TR_User;
 begin
   nbelem := 0;
   while not end_of_file(f) loop
@@ -839,6 +867,8 @@ procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in TV_Coups; PosVc : in integ
   --Tsaisienom : string(1..15);
   fscore : p_score_IO.file_type;
   v:TV_Virus;
+  fUser: p_User_IO.file_type;
+  i:integer;
 begin
   InitialiserFenetres;
   Fsauv:= DebutFenetre("Sauvegarder ?",400,100);
@@ -865,23 +895,29 @@ begin
 
   CacherFenetre(Fsauv);
 
-  if not exists("f_User.dat") then
-    ecrire_ligne("création du fichier...");
-    p_score_IO.create(fscore, out_file, "f_User.dat");
-    ChangerContenu(Fsauv, "txtScores", "Aucun score enregistre");
-  else
-    p_score_IO.open(fscore, p_score_IO.in_file, "f_score.dat");
 
-    VecteurScore:
+    if not exists("f_User.dat") then
+      ecrire_ligne("création du fichier...");
+      p_User_IO.create(fUser, out_file, "f_User.dat");
+    else
+      p_User_IO.open(fUser, p_User_IO.append_file, "f_score.dat");
+    end if;
+
+
+    VectDyn:
     declare
-      vscore:Tv_score(1..nbElem(fscore));
+      VUser: TV_User(1..nbElem(fUser));
     begin
-      fichversVect(fscore, vscore);
-      Afficherscore(vscore, Fsauv);
-    end VecteurScore;
-
-  end if;
-  close(fscore);
+    fichversVect(fUser, VUser);
+    i:=dicho(VUser, User.nom);
+    if i/=VUser'last then
+      VUser(i):=User;
+      vecctdansfich(VUser, fUser);
+    else
+      write(fUser, User);
+    end if;
+    close(fUser);
+  end VectDyn;
 
 end LancerSauv;
 
