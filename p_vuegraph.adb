@@ -496,11 +496,15 @@ begin
           Quitter := true;
         elsif bouton = "BoutonTuto" then
           LancerRegleJeu(f);
-        --elsif bouton="BoutonMenu" then
-        --tempsfin := clock;
-        --temps:=tempsfin-tempsdebut; --on met "en pause" le timer lorsqu'on est dans un menu
-        --  --TODO menu
-        --tempsdebut := clock;
+        elsif bouton="BoutonMenu" then
+          --TODO sauvegarde niveau
+          CacherFenetre(win);
+          close(flog);
+          LancerPartie(f, User.niveau, Quitter);
+          if not Quitter then
+            LancerJeu(v, f, Quitter,  User.niveau);
+          end if;
+          Quitter:=true;
         elsif bouton="BoutonScore" then
           tempsfin := clock;
           temps:=natural(tempsfin-tempsdebut); --on met "en pause" le timer lorsqu'on est dans un menu
@@ -623,7 +627,7 @@ end calcscore;
 --------------------------Fenetre de fin-----------------------------------
 procedure LancerFin(nbcoup, temps : in natural; win : in out TR_Fenetre; f : in out p_Piece_IO.file_type; v : in out TV_Virus; partieNum : in integer) is --NOTE LancerFin
 --{} => {affiche une fenetre avec niveau precedent/suivant, Rejouer et les infos sur la partie terminée}
-  fin:boolean;
+  fin, fermerFin:boolean;
   numPropartie:integer;
 begin
   Ffin:=DebutFenetre("Fin de partie",500,200);
@@ -632,7 +636,7 @@ begin
   AjouterBouton(Ffin,"BoutonNiveau", "Niveaux", 255,170,70,50);
   AjouterBouton(Ffin,"BoutonQuitter","Quitter",180,170,70,50); --(margeG, margeH, boutonL, boutonH)
   AjouterBouton(Ffin,"BoutonRecommencer","Refaire" & NewLine & "le niveau",215,110,70,50);
-  AjouterBouton(Ffin,"BoutonScores", "Afficher" & NewLine & "les Scores", 300,50,65,40);
+  AjouterBouton(Ffin,"BoutonScores", "Afficher" & NewLine & "les Scores", 300,55,65,40);
 
   AjouterTexte(Ffin, "Score", natural'image(User.score), 200, 40, 70, 60);
   AjouterTexte(Ffin, "Info", "Bravo " & User.nom & ", vous avez fini en " & natural'image(temps) & " secondes en " & integer'image(nbcoup) & " coup votre score est :", 20, 20, 480, 20);
@@ -653,12 +657,13 @@ begin
       end loop;
     end cligno;
   begin
+    loop
+
     boutonC:
     declare
       bouton:string:=Attendrebouton(Ffin);
     begin
-      CacherFenetre(Ffin);
-      CacherFenetre(Win);
+      fermerFin:=true;
       abort cligno;
       if bouton="BoutonPrecedent" and partieNum>1 then
         LancerJeu(v,f, fin, partieNum-1);
@@ -675,14 +680,17 @@ begin
       elsif bouton="BoutonRecommencer" then
         LancerJeu(v,f, fin, partieNum);
       elsif bouton="BoutonScores" then
+        fermerFin:=false;
         ScoresFen;
       end if;
     end boutonC;
     abort cligno;
+    exit when fermerFin;
+  end loop;
+  CacherFenetre(Ffin);
+  CacherFenetre(Win);
   end clignoScore;
 end LancerFin;
-
----------------------------------------------------------------------------
 
 
 
@@ -810,7 +818,10 @@ begin
           Cacherfenetre(FRegleJeu);
         end if;
       else
-        Cacherfenetre(FRegleJeu);
+        Cacherfenetre(FReg
+------------------------------recherche dichotomique---------------------------
+
+leJeu);
       end if;
     end if;
   end if;
@@ -826,6 +837,9 @@ end LancerRegleJeu;
 procedure ScoresFen is --NOTE ScoresFen
   ----{} => {affiche la fenêtre des scores}
   vertic : natural;
+------------------------------recherche dichotomique---------------------------
+
+
   fscore : p_score_IO.file_type;
 begin
   vertic := 50;
@@ -922,6 +936,40 @@ begin
 end LancerSauv;
 
 
+------------------------------recherche dichotomique---------------------------
+
+function dicho(v : in tv_user; nom : in string) return integer is
+--{} => {recherche nom dans v et renvoie un entier}
+  m, inf, sup : integer;
+begin
+  if nom > V(v'last) then
+      return 0;
+  else
+    inf := V'first; sup := V'last;
+    while inf < sup loop
+      m := (inf+sup)/2;
+      if  <= V(m) then
+        sup := m;
+      else
+        inf := m+1;
+      end if;
+    end loop;
+    if nom = V(sup) then
+      return sup;
+    else
+      return 0;
+    end if;
+  end if;
+  end dicho;
+
+  procedure vectdansfich(v : in tv_user;f in out p_user_IO.file_type) is
+--{} => {met v dans f}
+  begin
+    for i in v'range loop
+      write(f, v(i));
+      i:=i+1;
+    end loop;
+  end vectdansfich;
 --------------------------------------------------------------------------------
 
 end p_vuegraph;
