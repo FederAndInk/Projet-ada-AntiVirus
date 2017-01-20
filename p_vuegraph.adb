@@ -215,7 +215,7 @@ begin --LancerPartie
       Bouton : String := (Attendrebouton(Fpartie)); -- on recupere le nom du bouton
     begin
       --Les coordonnées I et J a partir de leurs positions dans les char, moins leurs positions par rapport à '0'
-      if Bouton/="BoutonQuitter" and Bouton/="BoutonCommencer" then
+      if Bouton/="BoutonQuitter" and Bouton/="BoutonCommencer" and bouton/="BoutonTuto" then
         I:=Character'Pos(Bouton(Bouton'First)) - Character'Pos('0');
         J:=Character'Pos(Bouton(Bouton'Last)) - Character'Pos('0');
         partie:=(i-1)*5+J; --on donne la valeur du bouton :)
@@ -546,14 +546,16 @@ begin
 
 
   ----------------------fin de la partie / traitement du score-------
-  tempsfin := clock;
-  temps := temps + natural(tempsfin - tempsdebut);
+  if Gueri(v) then
+    tempsfin := clock;
+    temps := temps + natural(tempsfin - tempsdebut);
 
-  User.score := calcscore(nbmove, temps);
+    User.score := calcscore(nbmove, temps);
 
-  User.date := clock;
+    User.date := clock;
 
-  ecrire_ligne(User.score);
+    ecrire_ligne(User.score);
+  end if;
 
 
   ---enregistrement dans le ficher
@@ -758,7 +760,7 @@ begin
 
   if not q then
     ChangerImageBouton(FRegleJeu, "hg", "resources/arhg.xpm");
-    ChangerImageBouton(FRegleJeu, "hd", "resources/arhdII.xpm");
+    ChangerImageBouton(FRegleJeu, "hd", "resources/arhdI.xpm");
     Changertexte(FRegleJeu, "Info", "Vous vous deplacer en diagonale");
     Regle2Block(v, q);
     if not q then
@@ -863,23 +865,23 @@ begin
 
   CacherFenetre(Fsauv);
 
-  --if not exists("f_score.dat") then
-  --  ecrire_ligne("création du fichier...");
-  --  p_score_IO.create(fscore, out_file, "f_score.dat");
-  --  ChangerContenu(Fsauv, "txtScores", "Aucun score enregistre");
-  --else
-  --  p_score_IO.open(fscore, p_score_IO.in_file, "f_score.dat");
-  --
-  --  VecteurScore:
-  --  declare
-  --    vscore:Tv_score(1..nbElem(fscore));
-  --  begin
-  --    fichversVect(fscore, vscore);
-  --    Afficherscore(vscore, Fsauv);
-  --  end VecteurScore;
-  --
-  --end if;
-  --close(fscore);
+  if not exists("f_User.dat") then
+    ecrire_ligne("création du fichier...");
+    p_score_IO.create(fscore, out_file, "f_User.dat");
+    ChangerContenu(Fsauv, "txtScores", "Aucun score enregistre");
+  else
+    p_score_IO.open(fscore, p_score_IO.in_file, "f_score.dat");
+
+    VecteurScore:
+    declare
+      vscore:Tv_score(1..nbElem(fscore));
+    begin
+      fichversVect(fscore, vscore);
+      Afficherscore(vscore, Fsauv);
+    end VecteurScore;
+
+  end if;
+  close(fscore);
 
 end LancerSauv;
 
