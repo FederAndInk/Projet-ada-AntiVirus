@@ -19,7 +19,7 @@ nbrouge:integer:=0;
 nbconfig:integer:=1;
 begin
   reset(f, in_file);
-  while not end_of_file(f) and nbconfig/=nb loop --move till the good config
+  while not end_of_file(f) and nbconfig/=nb loop --move till the good config --TODO prendre en compte les depassement 
     read(f, piece);
     if piece.couleur=rouge then
       nbrouge:=nbrouge+1;
