@@ -109,6 +109,7 @@ function nbElem(f : in p_User_IO.file_type) return natural is --NOTE nbelem
 begin
   nbelem := 0;
   while not end_of_file(f) loop
+    ecrire("test");
     read(f,i);
     nbelem := nbelem+1;
   end loop;
@@ -477,6 +478,7 @@ begin
   User.niveau :=partieNum; --on sauvegarde le niveau au debut au cas d'une sauvegarde de partie;
   temps:=0;
   nbmove:=0;
+  initVcoup(vcoup);
   vcoup(nbmove):=v;
   --nbmove:=1;
 
@@ -873,11 +875,23 @@ end ScoresFen;
 --------------------------------------------------------------------------------
 ------------------------------Backup window-------------------------------------
 
-procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in TV_Coups; PosVc : in integer; f : in out p_Piece_IO.file_type) is --NOTE LancerSauv
+procedure initVcoup(v: out TV_Coups) is
+--{} => {}
+  Vv : TV_Virus;
+begin --initVcoup
+  InitVect(Vv);
+  for i in v'range loop
+    v(i):=Vv;
+  end loop;
+end initVcoup;
+
+
+procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in out TV_Coups; PosVc : in integer; f : in out p_Piece_IO.file_type) is --NOTE LancerSauv
   ----{} => {Afficher un popup pour sauvegarder la partie}
   --Tsaisienom : string(1..15);
   fscore : p_score_IO.file_type;
   v:TV_Virus;
+  U: TR_User;
   fUser: p_User_IO.file_type;
   i:integer;
 begin
@@ -891,34 +905,39 @@ begin
   reset(f, in_file);
 
   UserBack.niveau:=User.niveau;
+  ecrire("testniv");
+  ecrire(User.niveau);
+  initVcoup(Vcoups);
 
   if AttendreBouton(Fsauv)="BoutonNonS" then
     InitVect(v);
     CreeVectVirus(f,UserBack.niveau, v);
-    UserBack.partieSauv:=v;-- on ne sauvegarde rien, on prend la part
-    UserBack.coupsSauv:=Vcoups;
+    --UserBack.partieSauv:=v;-- on ne sauvegarde rien, on prend la part
+    --UserBack.coupsSauv:=Vcoups;
     UserBack.coupPos:=0;
   else
-    UserBack.partieSauv:=vSauv; --On sauvegarde le plateau
+    --UserBack.partieSauv:=vSauv; --On sauvegarde le plateau
     UserBack.coupPos:=PosVc;
-    UserBack.coupsSauv:=Vcoups;
+    --UserBack.coupsSauv:=Vcoups;
   end if;
 
   CacherFenetre(Fsauv);
-
-
+  u:=UserBack;
+  affUser(u);
     if not exists("f_User.dat") then
       ecrire_ligne("création du fichier...");
       p_User_IO.create(fUser, out_file, "f_User.dat");
+      p_User_IO.write(fUser, u);
+
     else
-      p_User_IO.open(fUser, p_User_IO.append_file, "f_score.dat");
-    end if;
+      p_User_IO.open(fUser, in_file, "f_score.dat");
 
 
     VectDyn:
     declare
       VUser: TV_User(1..nbElem(fUser));
     begin
+      reset(f, append_file);
     fichversVect(fUser, VUser);
     i:=dicho(VUser, User.nom);
     if i/=VUser'last then
@@ -927,8 +946,9 @@ begin
     else
       write(fUser, UserBack);
     end if;
-    close(fUser);
   end VectDyn;
+end if;
+close(fUser);
 
 end LancerSauv;
 
@@ -966,6 +986,34 @@ procedure vectdansfich(v : in tv_user;f : in out p_user_IO.file_type) is
       write(f, v(i));
     end loop;
   end vectdansfich;
+
+
+procedure affUser(Users:in TR_User) is
+--{} => {}
+
+begin --affUser
+  a_la_ligne;
+  a_la_ligne;
+
+  ecrire_ligne(Users.nom);
+  a_la_ligne;
+  a_la_ligne;
+
+  ecrire_ligne(Users.niveau);
+  a_la_ligne;
+  a_la_ligne;
+
+  --AfficheVectVirus(Users.partieSauv);
+  a_la_ligne;
+  a_la_ligne;
+  --for i in Users.coupsSauv'range loop
+  --  AfficheVectVirus(Users.coupsSauv(i));
+  --  a_la_ligne;
+  --  a_la_ligne;
+  --
+  --end loop;
+  ecrire_ligne(Users.coupPos);
+end affUser;
 --------------------------------------------------------------------------------
 
 end p_vuegraph;

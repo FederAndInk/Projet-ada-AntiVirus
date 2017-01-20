@@ -20,13 +20,13 @@ type TR_score is record
   date : time;
 end record;
 
-type TV_Coups is array (0..256) of TV_Virus;
+type TV_Coups is array (0..10) of TV_Virus;
 
 type TR_User is record
   nom : string(1..10);
   niveau : natural;
-  partieSauv : TV_Virus;
-  coupsSauv : TV_Coups;
+  --partieSauv : TV_Virus;
+  --coupsSauv : TV_Coups;
   coupPos : integer;
 end record;
 
@@ -146,7 +146,11 @@ procedure ScoresFen; --NOTE ScoresFen
 
 ------------------------Backup----------------------------------
 
-procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in TV_Coups; PosVc : in integer; f : in out p_Piece_IO.file_type); --NOTE LancerSauv
+procedure initVcoup(v: out TV_Coups);
+--{} => {}
+
+
+procedure LancerSauv(vSauv : in TV_Virus; Vcoups : in out TV_Coups; PosVc : in integer; f : in out p_Piece_IO.file_type); --NOTE LancerSauv
   ----{} => {Afficher un popup pour sauvegarder la partie}
 
 function dicho(v : in tv_user; nom : in string) return integer;
@@ -155,5 +159,9 @@ function dicho(v : in tv_user; nom : in string) return integer;
 
 procedure vectdansfich(v : in tv_user;f : in out p_user_IO.file_type);
 --{} => {met v dans f}
+
+procedure affUser(Users:in TR_User);
+--{} => {}
+
 ---------------------------------------------------------------------
 end p_vuegraph;

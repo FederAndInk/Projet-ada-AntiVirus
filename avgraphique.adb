@@ -22,29 +22,27 @@ begin --avgraphique
 
   LancerScores;
 
-  if not exists("f_User.dat") then
-    ecrire_ligne("création du fichier...");
-    p_User_IO.create(fUser, out_file, "f_User.dat");
-  else
-    p_User_IO.open(fUser, p_User_IO.append_file, "f_score.dat");
+  --if exists("f_User.dat") then
+  --  p_User_IO.open(fUser, in_file, "f_score.dat");
+  --  i:=nbElem(fUser);
+  --  ecrire("test I");
+  --  ecrire(i);
+  --  VectDyn:
+  --  declare
+  --    VUser: TV_User(1..nbElem(fUser));
+  --  begin
+  --    reset(fUser, in_file);
+  --    ecrire(nbElem(fUser));
+  --  fichversVect(fUser, VUser);
+  --  i:=dicho(VUser, UserBack.nom);
+  --  if i/=VUser'last then
+  --    VUser(i):=UserBack;
+  --    LancerJeu(v_grille,fconfinit, stop, user.niveau);
+  --  end if;
+  --end VectDyn;
+  --close(fUser);
+  --end if;
 
-
-    VectDyn:
-    declare
-      VUser: TV_User(1..nbElem(fUser));
-    begin
-    fichversVect(fUser, VUser);
-    i:=dicho(VUser, UserBack.nom);
-    if i/=VUser'last then
-      VUser(i):=UserBack;
-      LancerJeu(v_grille,fconfinit, stop, user.niveau);
-    end if;
-    close(fUser);
-
-  end VectDyn;
-  end if;
-
-  close(fUser);
 
   LancerPartie(fconfinit, partieNum, stop);
   if not stop then
