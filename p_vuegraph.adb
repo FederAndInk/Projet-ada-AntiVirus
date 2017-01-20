@@ -669,10 +669,16 @@ begin
       fermerFin:=true;
       abort cligno;
       if bouton="BoutonPrecedent" and partieNum>1 then
+        CacherFenetre(Ffin);
+        CacherFenetre(win);
         LancerJeu(v,f, fin, partieNum-1);
       elsif bouton="BoutonSuivant" and partieNum<20 then
+        CacherFenetre(Ffin);
+        CacherFenetre(win);
         LancerJeu(v,f, fin, partieNum+1);
       elsif bouton="BoutonNiveau" then
+        CacherFenetre(Ffin);
+        CacherFenetre(win);
         LancerPartie(f, numPropartie, fin);
         if not fin then
           LancerJeu(v,f, fin, numPropartie);
@@ -681,6 +687,8 @@ begin
         CacherFenetre(Ffin);
         CacherFenetre(win);
       elsif bouton="BoutonRecommencer" then
+        CacherFenetre(Ffin);
+        CacherFenetre(win);
         LancerJeu(v,f, fin, partieNum);
       elsif bouton="BoutonScores" then
         fermerFin:=false;
@@ -690,8 +698,6 @@ begin
     abort cligno;
     exit when fermerFin;
   end loop;
-  CacherFenetre(Ffin);
-  CacherFenetre(Win);
   end clignoScore;
 end LancerFin;
 
