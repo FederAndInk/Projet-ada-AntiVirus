@@ -602,7 +602,7 @@ begin
   AjouterBouton(Ffin,"BoutonNiveau", "Niveaux", 255,170,70,50);
   AjouterBouton(Ffin,"BoutonQuitter","Quitter",180,170,70,50); --(margeG, margeH, boutonL, boutonH)
   AjouterBouton(Ffin,"BoutonRecommencer","Refaire" & NewLine & "le niveau",215,110,70,50);
-  AjouterBouton(Ffin,"BoutonScores", "Afficher" & NewLine & "les Scores", 300,50,65,40);
+  AjouterBouton(Ffin,"BoutonScores", "Afficher" & NewLine & "les Scores", 300,55,65,40);
 
   AjouterTexte(Ffin, "Score", natural'image(User.score), 200, 40, 70, 60);
   AjouterTexte(Ffin, "Info", "Bravo " & User.nom & ", vous avez fini en " & natural'image(temps) & " secondes en " & integer'image(nbcoup) & " coup votre score est :", 20, 20, 480, 20);
