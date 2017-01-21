@@ -20,7 +20,7 @@ type TR_score is record
   date : time;
 end record;
 
-type TV_Coups is array (0..100) of TV_Virus;
+type TV_Coups is array (0..256) of TV_Virus;
 
 type TR_User is record
   nom : string(1..10);

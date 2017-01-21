@@ -380,7 +380,7 @@ begin --log
     slog(1..lg+1):=s(1..lg) & NewLine;
     lgtot:=lgtot+lg;
   end if;
-  while not end_of_file(f) and lgtot<=(10000-lg) loop
+  while not end_of_file(f) and lgtot<=(10000-lg-1) loop
     get_line(f, s, lg);
     debs:=lgtot+1;
     lgtot:=lgtot+lg;
@@ -514,7 +514,7 @@ begin
           ScoresFen;
           tempsdebut := clock;
         elsif bouton = "BoutonAnnuler" then
-          if nbmove>1 then
+          if nbmove>0 then
             nbmove:=nbmove-1;
             --ChangerContenu(win, "Info", "Deplacement" & integer'image(nbmove) & " annule");
             put(flog, "Deplacement" & integer'image(nbmove) & " annule");
@@ -530,7 +530,7 @@ begin
           CreeVectVirus(f,partieNum, v);
         elsif Bouton = "hd" and (coul/=vide or coul/=blanc) then
           Dir := hd;
-          if possible(v,coul, Dir) then
+          if possible(v,coul, Dir) and nbmove/=vcoup'last then
             Deplacement(v,coul, Dir);
             vcoup(nbmove):=v;
             nbmove:=nbmove+1;
@@ -540,7 +540,7 @@ begin
           end if;
         elsif Bouton = "hg" and (coul/=vide or coul/=blanc) then
           Dir := hg;
-          if possible(v,coul, Dir) then
+          if possible(v,coul, Dir) and nbmove/=vcoup'last then
             Deplacement(v,coul, Dir);
             vcoup(nbmove):=v;
             nbmove:=nbmove+1;
@@ -550,7 +550,7 @@ begin
           end if;
         elsif Bouton = "bd" and (coul/=vide or coul/=blanc) then
           Dir := bd;
-          if possible(v,coul, Dir) then
+          if possible(v,coul, Dir) and nbmove/=vcoup'last then
             Deplacement(v,coul, Dir);
             vcoup(nbmove):=v;
             nbmove:=nbmove+1;
@@ -560,7 +560,7 @@ begin
           end if;
         elsif Bouton = "bg" and (coul/=vide or coul/=blanc)  then
           Dir := bg;
-          if possible(v,coul, Dir) then
+          if possible(v,coul, Dir) and nbmove/=vcoup'last then
             Deplacement(v,coul, Dir);
             vcoup(nbmove):=v;
             nbmove:=nbmove+1;
